@@ -122,7 +122,11 @@ function tle_weibo_tuchuang_options(){
 	?>
 	<div class="wrap">
 		<h2>微博图床设置:</h2>
-		作者：<a href="http://tongleer.com" title="微博图床">二呆</a>
+		作者：<a href="http://tongleer.com" title="微博图床">二呆</a><br />
+		<?php
+		$version=file_get_contents('http://api.tongleer.com/interface/TleWeiboTuchuang.php?action=update&version=1');
+		echo $version;
+		?>
 		<form method="get" action="">
 			<p>
 				<input type="text" name="tle_weibouser" placeholder="微博小号用户名" value="<?=$weibo_configs['tle_weibouser'];?>" />
