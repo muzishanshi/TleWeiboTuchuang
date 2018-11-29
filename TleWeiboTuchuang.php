@@ -156,7 +156,7 @@ if(isset($_GET['t'])){
 				$cookie=$Sinaupload->login($weibo_configs['tle_weibouser'],$weibo_configs['tle_weibopwd']);
 				$result=$Sinaupload->upload($_FILES['tle_weibo_tuchuang']['tmp_name'][$i]);
 				$arr = json_decode($result,true);
-				echo '<img src="https://ws3.sinaimg.cn/large/' . $arr['data']['pics']['pic_1']['pid'] . '.jpg" alt="' . $_FILES['tle_weibo_tuchuang']['tmp_name'][$i] . '" />';
+				echo '<img src="https://ws3.sinaimg.cn/large/' . $arr['data']['pics']['pic_1']['pid'] . '.jpg" alt="' . $_FILES['tle_weibo_tuchuang']['name'][$i] . '" />';
 			}
             exit;
         }
