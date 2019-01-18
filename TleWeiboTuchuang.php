@@ -46,7 +46,7 @@ function add_my_media_button() {
 		<a href="javascript:;" class="weibo-upload"><input type="file" id="inputWeiboFile" multiple />微博图床</a>
 	';
 }
-add_action('submitpost_box', 'tle_weibo_tuchuang_post_box');
+add_action('add_meta_boxes', 'tle_weibo_tuchuang_post_box');
 function tle_weibo_tuchuang_post_box(){
     add_meta_box('tle_weibo_tuchuang_div', __('微博图床'), 'tle_weibo_tuchuang_post_html', 'post', 'side');
 }
