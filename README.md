@@ -16,7 +16,7 @@ TleWeiboTuchuang新浪微博图床用微博小号代替微博授权的方式，�
 第四步：完成。
 
 #### 使用注意：
-此插件V1.0.1版本使用php5.6编写，php7.0“可能”会报Sinaupload.php中的语法错误，建议使用php5.6，因为7.0实在太高了=_=!
+此插件版本使用php5.6编写，建议使用php5.6，现已支持WordPress 5.0以上版本。
 
 #### 与我联系：
 作者：二呆<br />
@@ -25,6 +25,10 @@ Q群：770956878<br />
 Github：https://github.com/muzishanshi/TleWeiboTuchuang
 
 #### 更新记录：
+2019-01-18
+
+	新增支持WordPress5.0以上版本
+	
 2018-09-22
 	新增批量上传图片<br />
 	优化上传按钮的位置为编辑器上部方便使用

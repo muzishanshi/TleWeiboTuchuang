@@ -3,7 +3,7 @@
 Plugin Name: TleWeiboTuchuang
 Plugin URI: https://github.com/muzishanshi/TleWeiboTuchuang
 Description:  TleWeiboTuchuang新浪微博图床用微博小号代替微博授权的方式，自动利用cookie上传，更加方便，在文章发布页面增加微博上传功能，使用微博作为图床，只需一个微博小号即可实现。（因权限问题可能会失败几次，可多尝试几个微博小号。）
-Version: 1.0.2
+Version: 1.0.3
 Author: 二呆
 Author URI: http://www.tongleer.com
 License: 
@@ -174,7 +174,7 @@ function tle_weibo_tuchuang_options(){
 		<h2>微博图床设置</h2>
 		作者：<a href="http://tongleer.com" title="微博图床">二呆</a><br />
 		<?php
-		$version=file_get_contents('http://api.tongleer.com/interface/TleWeiboTuchuang.php?action=update&version=2');
+		$version=file_get_contents('http://api.tongleer.com/interface/TleWeiboTuchuang.php?action=update&version=3');
 		echo $version;
 		?>
 		<form method="get" action="">
