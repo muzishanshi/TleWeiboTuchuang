@@ -139,7 +139,7 @@ function tle_weibo_tuchuang_post_html(){
 }
 
 if(isset($_GET['t'])){
-    if($_GET['t'] == 'config'){
+    if($_GET['t'] == 'configTleWeiboTuchuang'){
         update_option('tle_weibo_tuchuang', array('tle_weibouser' => $_REQUEST['tle_weibouser'], 'tle_weibopwd' => $_REQUEST['tle_weibopwd']));
     }
     
@@ -185,7 +185,7 @@ function tle_weibo_tuchuang_options(){
 				<input type="password" name="tle_weibopwd" placeholder="微博小号密码" value="<?=$weibo_configs['tle_weibopwd'];?>" />
 			</p>
 			<p>
-				<input type="hidden" name="t" value="config" />
+				<input type="hidden" name="t" value="configTleWeiboTuchuang" />
 				<input type="hidden" name="page" value="tle-weibo-tuchuang" />
 				<input type="submit" value="修改" />
 			</p>

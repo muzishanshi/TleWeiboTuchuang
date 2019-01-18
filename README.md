@@ -25,7 +25,7 @@ Q群：770956878<br />
 Github：https://github.com/muzishanshi/TleWeiboTuchuang
 
 #### 更新记录：
-2019-01-18
+2019-01-18 V1.0.3
 
 	新增支持WordPress5.0以上版本
 	
