@@ -21,7 +21,7 @@ TleWeiboTuchuang新浪微博图床用微博小号代替微博授权的方式，�
 #### 与我联系：
 作者：二呆<br />
 网站：http://www.tongleer.com/<br />
-Q群：770956878<br />
+1元入群：http://joke.tongleer.com/327.html<br />
 Github：https://github.com/muzishanshi/TleWeiboTuchuang
 
 #### 更新记录：
