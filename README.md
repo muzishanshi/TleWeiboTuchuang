@@ -35,6 +35,10 @@ php5.6+WordPress 5.0.2
 Github：https://github.com/muzishanshi/TleWeiboTuchuang
 
 #### 更新记录：
+2019-04-25 V1.0.6
+
+	修复因马虎导致少替换了一个变量。
+	
 2019-04-25 V1.0.5
 
 	1、修复因马虎和未经测试导致的上传到微博相册没有返回值等错误；

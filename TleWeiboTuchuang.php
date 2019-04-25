@@ -3,13 +3,13 @@
 Plugin Name: TleWeiboTuchuang
 Plugin URI: https://github.com/muzishanshi/TleWeiboTuchuang
 Description:  新浪微博图床插件支持微博授权和非授权两种方式，并提供前台图传和远程连接、本地链接、微博图床链接之间的转换：1、非授权方式自动利用cookie上传，在文章发布页面增加微博上传功能，使用微博作为图床，更加方便，只需一个微博小号即可实现。（因微博验证或其他权限问题可能会失败几次，可多尝试几个微博小号多上传两次即可。）2、授权方式是利用分享功能可保存至自己的微博相册。
-Version: 1.0.5
+Version: 1.0.6
 Author: 二呆
 Author URI: http://www.tongleer.com
 License: 
 */
 global $wpdb;
-define("TLE_WEIBO_TUCHUANG_VERSION",5);
+define("TLE_WEIBO_TUCHUANG_VERSION",6);
 if(!class_exists('Sinaupload')){
 	require_once plugin_dir_path(__FILE__) . 'libs/Sinaupload.php';
 }
@@ -82,7 +82,9 @@ if(isset($_GET['t'])){
 					}
 					$postid = isset($_POST['postid']) ? addslashes($_POST['postid']) : '';
 					$post_content = get_post($postid)->post_content;
-					preg_match_all( "/<(img|IMG).*?src=[\'|\"](?!https:\/\/ws3\.sinaimg\.cn\/large\/)(.*?)[\'|\"].*?[\/]?>/", $post_content, $submatches );
+					$tle_weiboprefix=str_replace("/","\/",$weibo_configs['tle_weiboprefix']);
+					$tle_weiboprefix=str_replace(".","\.",$tle_weiboprefix);
+					preg_match_all( "/<(img|IMG).*?src=[\'|\"](?!".$tle_weiboprefix.")(.*?)[\'|\"].*?[\/]?>/", $post_content, $submatches );
 					$savepath=dirname(__FILE__)."/x.jpg";
 					foreach($submatches[2] as $url){
 						$html = file_get_contents($url);
@@ -325,7 +327,6 @@ function tle_weibo_tuchuang_post_html(){
 	}
 	echo '<script>var tle_weibo_tuchuang_post_url="' . admin_url('options-general.php?page=tle-weibo-tuchuang&t=uploadWBTC') . '";</script>';
    ?>
-   <meta name="referrer" content="never" />
    <div id="tle_weibo_tuchuang_post" style="width:auto;height:100px;border:3px dashed silver;line-height:100px; text-align:center; font-size:20px; color:#d3d3d3;cursor:pointer;">将图片拖拽到此区域上传</div>
    <input type="file" <?=$isMultiple;?> id="tle_weibo_tuchuang_input" style="position: absolute;display: block;top:0;left:0;bottom:0;right:0;opacity: 0;-moz-opacity: 0;filter:alpha(opacity=0);cursor:pointer;" />
    <script>
