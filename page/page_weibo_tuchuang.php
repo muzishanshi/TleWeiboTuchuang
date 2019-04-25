@@ -24,12 +24,12 @@ try{
 		<meta name="renderer" content="webkit">
 		<meta http-equiv="Cache-Control" content="no-siteapp"/>
 		<meta name="author" content="同乐儿">
-		<link rel="alternate icon" href="https://ws3.sinaimg.cn/large/ecabade5ly1fxpiemcap1j200s00s744.jpg" type="image/png" />
+		<link rel="alternate icon" href="<?=$weibo_configs['tle_weiboprefix'];?>ecabade5ly1fxpiemcap1j200s00s744.jpg" type="image/png" />
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/layer/2.3/layer.js"></script>
 	</head>
 	<body>
-	<div id="weibofile_webimg_container" onclick="weibofile_file.click()" style="margin:5px 0px;position: relative; border: 2px dashed #e2e2e2; background-image:url('<?=$weibo_configs['tle_webimgbg']?$weibo_configs['tle_webimgbg']:"https://ws3.sinaimg.cn/large/ecabade5ly1fxp3dil4pxj21hc0u0wn1.jpg";?>'); text-align: center; cursor: pointer;height: 100%;">
+	<div id="weibofile_webimg_container" onclick="weibofile_file.click()" style="margin:5px 0px;position: relative; border: 2px dashed #e2e2e2; background-image:url('<?=$weibo_configs['tle_webimgbg']?$weibo_configs['tle_webimgbg']:$weibo_configs['tle_weiboprefix']."ecabade5ly1fxp3dil4pxj21hc0u0wn1.jpg";?>'); text-align: center; cursor: pointer;height: 100%;">
 		<p id="weibofile_webimg_upload" style="height: <?=$weibo_configs['tle_webimgheight']?$weibo_configs['tle_webimgheight']:"100";?>px;line-height:<?=$weibo_configs['tle_webimgheight']?$weibo_configs['tle_webimgheight']:"100";?>px;position: relative;font-size:20px; color:#d3d3d3;">微博图床</p> 
 		<input type="file" id="weibofile_file" style="display:none" accept="image/*" <?=$isMultiple;?> /> 
 		<input type="hidden" id="tle_weibo_issave" value="<?=$weibo_configs['tle_weibo_issave'];?>"/>
