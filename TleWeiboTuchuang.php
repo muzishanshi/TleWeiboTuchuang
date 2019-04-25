@@ -17,7 +17,7 @@ if(!class_exists('Sinaupload')){
 if(isset($_GET['t'])){
 	/*设置参数*/
     if($_GET['t'] == 'updateWBTCConfig'){
-        update_option('tle_weibo_tuchuang', array('tle_weibouser' => $_REQUEST['tle_weibouser'], 'tle_weibopwd' => $_REQUEST['tle_weibopwd'], 'tle_webimgbg' => $_REQUEST['tle_webimgbg'], 'tle_webimgheight' => $_REQUEST['tle_webimgheight'], 'tle_weibo_issave' => $_REQUEST['tle_weibo_issave']));
+        update_option('tle_weibo_tuchuang', array('tle_weibouser' => $_REQUEST['tle_weibouser'], 'tle_weibopwd' => $_REQUEST['tle_weibopwd'], 'tle_webimgbg' => $_REQUEST['tle_webimgbg'], 'tle_webimgheight' => $_REQUEST['tle_webimgheight'], 'tle_weibo_issave' => $_REQUEST['tle_weibo_issave'],'tle_weiboprefix'=>$_REQUEST['tle_weiboprefix']));
     }
     /*编辑文章中上传*/
     if($_GET['t'] == 'uploadWBTC'){
@@ -62,7 +62,7 @@ if(isset($_GET['t'])){
 					$cookie=$Sinaupload->login($weibo_configs['tle_weibouser'],$weibo_configs['tle_weibopwd']);
 					$result=$Sinaupload->upload($_FILES['tle_weibo_tuchuang']['tmp_name'][$i]);
 					$arr = json_decode($result,true);
-					echo '<img src="https://ws3.sinaimg.cn/large/' . $arr['data']['pics']['pic_1']['pid'] . '.jpg" alt="' . $_FILES['tle_weibo_tuchuang']['name'][$i] . '" />';
+					echo '<img src="'.$weibo_configs['tle_weiboprefix'] . $arr['data']['pics']['pic_1']['pid'] . '.jpg" alt="' . $_FILES['tle_weibo_tuchuang']['name'][$i] . '" />';
 				}
 			}
 		}
@@ -92,7 +92,7 @@ if(isset($_GET['t'])){
 						$result=$Sinaupload->upload($savepath);
 						$arr = json_decode($result,true);
 						if(isset($arr['data']['pics']['pic_1']['pid'])){
-							$imgurl="https://ws3.sinaimg.cn/large/".$arr['data']['pics']['pic_1']['pid'].".jpg";
+							$imgurl="".$weibo_configs['tle_weiboprefix'].$arr['data']['pics']['pic_1']['pid'].".jpg";
 							$post_content=str_replace($url,$imgurl,$post_content);
 							
 							if(strpos($url,get_bloginfo("url"))!== false){
@@ -187,9 +187,9 @@ if(isset($_GET['t'])){
 				$cookie=$Sinaupload->login($weibo_configs['tle_weibouser'],$weibo_configs['tle_weibopwd']);
 				$result=$Sinaupload->upload($_FILES['webimgupload']['tmp_name'][$i]);
 				$arr = json_decode($result,true);
-				$urls.="https://ws3.sinaimg.cn/large/".$arr['data']['pics']['pic_1']['pid'].".jpg<br />";
-				$hrefs.="<a style='text-decoration:none;' href='https://ws3.sinaimg.cn/large/".$arr['data']['pics']['pic_1']['pid'].".jpg' target='_blank' title='".$_FILES['webimgupload']['name'][$i]."'>https://ws3.sinaimg.cn/large/".$arr['data']['pics']['pic_1']['pid'].".jpg</a><br />";
-				$codes.="<a href='https://ws3.sinaimg.cn/large/".$arr['data']['pics']['pic_1']['pid'].".jpg' target='_blank' title='".$_FILES['webimgupload']['name'][$i]."'><img src='https://ws3.sinaimg.cn/large/".$arr['data']['pics']['pic_1']['pid'].".jpg' alt='".$_FILES['webimgupload']['name'][$i]."' /></a>\r\n";
+				$urls.="".$weibo_configs['tle_weiboprefix'].$arr['data']['pics']['pic_1']['pid'].".jpg<br />";
+				$hrefs.="<a style='text-decoration:none;' href='".$weibo_configs['tle_weiboprefix'].$arr['data']['pics']['pic_1']['pid'].".jpg' target='_blank' title='".$_FILES['webimgupload']['name'][$i]."'>".$weibo_configs['tle_weiboprefix'].$arr['data']['pics']['pic_1']['pid'].".jpg</a><br />";
+				$codes.="<a href='".$weibo_configs['tle_weiboprefix'].$arr['data']['pics']['pic_1']['pid'].".jpg' target='_blank' title='".$_FILES['webimgupload']['name'][$i]."'><img src='".$weibo_configs['tle_weiboprefix'].$arr['data']['pics']['pic_1']['pid'].".jpg' alt='".$_FILES['webimgupload']['name'][$i]."' /></a>\r\n";
 			}
 			$json=json_encode(array("status"=>"ok","msg"=>"上传结果","urls"=>$urls,"hrefs"=>$hrefs,"codes"=>$codes));
 			echo $json;
@@ -223,7 +223,10 @@ function tle_weibo_tuchuang_render_post_columns($column_name, $id) {
 		preg_match_all( "/<(img|IMG).*?src=[\'|\"](.*?)[\'|\"].*?[\/]?>/", $post_content, $matches );
 		if(count($matches[2])>0){
 			//转换微博图传链接
-			preg_match_all( "/<(img|IMG).*?src=[\'|\"](?!https:\/\/ws3\.sinaimg\.cn\/large\/)(.*?)[\'|\"].*?[\/]?>/", $post_content, $submatches );
+			$weibo_configs = get_settings('tle_weibo_tuchuang');
+			$tle_weiboprefix=str_replace("/","\/",$weibo_configs['tle_weiboprefix']);
+			$tle_weiboprefix=str_replace(".","\.",$tle_weiboprefix);
+			preg_match_all( "/<(img|IMG).*?src=[\'|\"](?!".$tle_weiboprefix.")(.*?)[\'|\"].*?[\/]?>/", $post_content, $submatches );
 			if(count($submatches[2])>0){
 				echo '
 					<a href="javascript:;" class="tle_weibo_tuchuang_convert_id" id="tle_weibo_tuchuang_convert_id'.$id.'" data-id="'.$id.'">转换</a>
@@ -427,6 +430,9 @@ function tle_weibo_tuchuang_options(){
 			</p>
 			<p>
 				<input type="password" name="tle_weibopwd" placeholder="微博小号密码" value="<?=$weibo_configs['tle_weibopwd'];?>" />
+			</p>
+			<p>
+				<input type="text" name="tle_weiboprefix" placeholder="图片链接前缀" value="<?=$weibo_configs['tle_weiboprefix']?$weibo_configs['tle_weiboprefix']:"https://ws3.sinaimg.cn/large/";?>" />
 			</p>
 			<p>
 				<input type="text" name="tle_webimgbg" placeholder="前台图床背景" value="<?=$weibo_configs['tle_webimgbg'];?>" />
