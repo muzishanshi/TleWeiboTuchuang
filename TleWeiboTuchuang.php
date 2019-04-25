@@ -209,8 +209,10 @@ if(isset($_GET['t'])){
 
 add_action( 'admin_init', 'tle_weibo_tuchuang_admin_init' );
 function tle_weibo_tuchuang_admin_init() {
-    add_filter('manage_post_posts_columns', 'tle_weibo_tuchuang_add_post_columns');
-	add_action('manage_posts_custom_column', 'tle_weibo_tuchuang_render_post_columns', 10, 2);
+	if( current_user_can( 'manage_options' ) ) {
+		add_filter('manage_post_posts_columns', 'tle_weibo_tuchuang_add_post_columns');
+		add_action('manage_posts_custom_column', 'tle_weibo_tuchuang_render_post_columns', 10, 2);
+	}
 	add_action( 'admin_enqueue_scripts', 'tle_weibo_tuchuang_scripts' );
 	add_filter( 'plugin_action_links', 'tle_weibo_tuchuang_add_link', 10, 2 );
 }
