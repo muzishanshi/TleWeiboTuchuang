@@ -24,6 +24,7 @@ try{
 		<meta name="renderer" content="webkit">
 		<meta http-equiv="Cache-Control" content="no-siteapp"/>
 		<meta name="author" content="同乐儿">
+		<meta name="referrer" content="never" />
 		<link rel="alternate icon" href="<?=$weibo_configs['tle_weiboprefix'];?>ecabade5ly1fxpiemcap1j200s00s744.jpg" type="image/png" />
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/layer/2.3/layer.js"></script>

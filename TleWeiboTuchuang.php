@@ -325,6 +325,7 @@ function tle_weibo_tuchuang_post_html(){
 	}
 	echo '<script>var tle_weibo_tuchuang_post_url="' . admin_url('options-general.php?page=tle-weibo-tuchuang&t=uploadWBTC') . '";</script>';
    ?>
+   <meta name="referrer" content="never" />
    <div id="tle_weibo_tuchuang_post" style="width:auto;height:100px;border:3px dashed silver;line-height:100px; text-align:center; font-size:20px; color:#d3d3d3;cursor:pointer;">将图片拖拽到此区域上传</div>
    <input type="file" <?=$isMultiple;?> id="tle_weibo_tuchuang_input" style="position: absolute;display: block;top:0;left:0;bottom:0;right:0;opacity: 0;-moz-opacity: 0;filter:alpha(opacity=0);cursor:pointer;" />
    <script>
