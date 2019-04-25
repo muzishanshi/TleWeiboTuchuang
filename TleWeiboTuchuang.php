@@ -3,13 +3,13 @@
 Plugin Name: TleWeiboTuchuang
 Plugin URI: https://github.com/muzishanshi/TleWeiboTuchuang
 Description:  新浪微博图床插件支持微博授权和非授权两种方式，并提供前台图传和远程连接、本地链接、微博图床链接之间的转换：1、非授权方式自动利用cookie上传，在文章发布页面增加微博上传功能，使用微博作为图床，更加方便，只需一个微博小号即可实现。（因微博验证或其他权限问题可能会失败几次，可多尝试几个微博小号多上传两次即可。）2、授权方式是利用分享功能可保存至自己的微博相册。
-Version: 1.0.4
+Version: 1.0.5
 Author: 二呆
 Author URI: http://www.tongleer.com
 License: 
 */
 global $wpdb;
-define("TLE_WEIBO_TUCHUANG_VERSION",4);
+define("TLE_WEIBO_TUCHUANG_VERSION",5);
 if(!class_exists('Sinaupload')){
 	require_once plugin_dir_path(__FILE__) . 'libs/Sinaupload.php';
 }
@@ -38,18 +38,21 @@ if(isset($_GET['t'])){
 				exit;
 			}
 			$time=time();
-			$utfname=$time."_".$_FILES["tle_weibo_tuchuang"]["name"];
+			$utfname=$time."_".$_FILES["tle_weibo_tuchuang"]["name"][0];
 			$gbkname = iconv("utf-8", "gbk", $utfname);
-			move_uploaded_file($_FILES["tle_weibo_tuchuang"]["tmp_name"], dirname(__FILE__).'/'.$gbkname);
+			move_uploaded_file($_FILES["tle_weibo_tuchuang"]["tmp_name"][0], dirname(__FILE__).'/'.$gbkname);
 			$img=plugins_url()."/TleWeiboTuchuang/".$utfname;
 			/* 修改了下风格，并添加文章关键词作为微博话题，提高与其他相关微博的关联率 */
-			$string1 = '【'.get_bloginfo('url').'】';
+			$string1 = '【新浪图床】';
 			$string2 = '来源：'.get_bloginfo('url');
 			/* 微博字数控制，避免超标同步失败 */
-			$postData = $string1.mb_strimwidth("贴图",0, 140,'...').$string2;
+			$postData = $string1.mb_strimwidth("",0, 140,'...').$string2;
 			$c = new SaeTClientV2( $weibosync_configs["weiboappkey"] , $weibosync_configs["weiboappsecret"] , SINAV2_ACCESS_TOKEN );
 			$arr=$c->share($postData,$img);
 			@unlink(dirname(__FILE__).'/'.$gbkname);
+			if(isset($arr["original_pic"])){
+				echo '<img src="' . $arr["original_pic"] . '" alt="' . $_FILES['tle_weibo_tuchuang']['name'][0] . '" />';
+			}
 		}else{
 			if(!isset($weibo_configs['tle_weibouser']) || !isset($weibo_configs['tle_weibopwd'])){
 				echo '请先配置微博小号';
@@ -137,23 +140,60 @@ if(isset($_GET['t'])){
 	/*前台上传*/
 	if($_GET['t'] == 'uploadWBTCByForeground'){
 		$weibo_configs = get_settings('tle_weibo_tuchuang');
-		if(!isset($weibo_configs['tle_weibouser']) || !isset($weibo_configs['tle_weibopwd'])){
-			$json=json_encode(array("status"=>"noset","msg"=>"请先配置微博小号"));echo $json;exit;
+		if($weibo_configs['tle_weibo_issave']=="y"){
+			date_default_timezone_set('Asia/Shanghai');
+			if (file_exists(dirname(__FILE__).'/../TleWeiboSyncV2/libs/saetv2.ex.class.php')) {
+				if(!class_exists('SaeTOAuthV2')&&!class_exists('SaeTClientV2')){
+					require_once plugin_dir_path(__FILE__) . '../TleWeiboSyncV2/libs/saetv2.ex.class.php';
+				}
+			}
+			if (file_exists(dirname(__FILE__).'/../TleWeiboSyncV2/sinav2_token_conf.php')) {
+				include( dirname(__FILE__).'/../TleWeiboSyncV2/sinav2_token_conf.php' );
+			}
+			if (!defined('SINAV2_ACCESS_TOKEN')){
+				echo "请先启用微博同步插件并授权：https://github.com/muzishanshi/TleWeiboSyncV2";
+				exit;
+			}
+			$time=time();
+			$utfname=$time."_".$_FILES["webimgupload"]["name"][0];
+			$gbkname = iconv("utf-8", "gbk", $utfname);
+			move_uploaded_file($_FILES["webimgupload"]["tmp_name"][0], dirname(__FILE__).'/'.$gbkname);
+			$img=plugins_url()."/TleWeiboTuchuang/".$utfname;
+			/* 修改了下风格，并添加文章关键词作为微博话题，提高与其他相关微博的关联率 */
+			$string1 = '【新浪图床】';
+			$string2 = '来源：'.get_bloginfo('url');
+			/* 微博字数控制，避免超标同步失败 */
+			$postData = $string1.mb_strimwidth("",0, 140,'...').$string2;
+			$c = new SaeTClientV2( $weibosync_configs["weiboappkey"] , $weibosync_configs["weiboappsecret"] , SINAV2_ACCESS_TOKEN );
+			$arr=$c->share($postData,$img);
+			@unlink(dirname(__FILE__).'/'.$gbkname);
+			if(isset($arr["original_pic"])){
+				$urls=$arr["original_pic"];
+				$hrefs="<a style='text-decoration:none;' href='".$urls."' target='_blank' title='".$_FILES['webimgupload']['name'][0]."'>".$urls."</a>";
+				$codes="<a href='".$urls."' target='_blank' title='".$_FILES['webimgupload']['name'][0]."'><img src='".$urls."' alt='".$_FILES['webimgupload']['name'][0]."' /></a>";
+				$json=json_encode(array("status"=>"ok","msg"=>"上传结果","urls"=>$urls,"hrefs"=>$hrefs,"codes"=>$codes));
+				echo $json;
+				
+			}
+		}else{
+			if(!isset($weibo_configs['tle_weibouser']) || !isset($weibo_configs['tle_weibopwd'])){
+				$json=json_encode(array("status"=>"noset","msg"=>"请先配置微博小号"));echo $json;exit;
+			}
+			$urls="";
+			$hrefs="";
+			$codes="";
+			for($i=0,$j=count($_FILES["webimgupload"]["name"]);$i<$j;$i++){
+				$Sinaupload=new Sinaupload('');
+				$cookie=$Sinaupload->login($weibo_configs['tle_weibouser'],$weibo_configs['tle_weibopwd']);
+				$result=$Sinaupload->upload($_FILES['webimgupload']['tmp_name'][$i]);
+				$arr = json_decode($result,true);
+				$urls.="https://ws3.sinaimg.cn/large/".$arr['data']['pics']['pic_1']['pid'].".jpg<br />";
+				$hrefs.="<a style='text-decoration:none;' href='https://ws3.sinaimg.cn/large/".$arr['data']['pics']['pic_1']['pid'].".jpg' target='_blank' title='".$_FILES['webimgupload']['name'][$i]."'>https://ws3.sinaimg.cn/large/".$arr['data']['pics']['pic_1']['pid'].".jpg</a><br />";
+				$codes.="<a href='https://ws3.sinaimg.cn/large/".$arr['data']['pics']['pic_1']['pid'].".jpg' target='_blank' title='".$_FILES['webimgupload']['name'][$i]."'><img src='https://ws3.sinaimg.cn/large/".$arr['data']['pics']['pic_1']['pid'].".jpg' alt='".$_FILES['webimgupload']['name'][$i]."' /></a>\r\n";
+			}
+			$json=json_encode(array("status"=>"ok","msg"=>"上传结果","urls"=>$urls,"hrefs"=>$hrefs,"codes"=>$codes));
+			echo $json;
 		}
-		$urls="";
-		$hrefs="";
-		$codes="";
-		for($i=0,$j=count($_FILES["webimgupload"]["name"]);$i<$j;$i++){
-			$Sinaupload=new Sinaupload('');
-			$cookie=$Sinaupload->login($weibo_configs['tle_weibouser'],$weibo_configs['tle_weibopwd']);
-			$result=$Sinaupload->upload($_FILES['webimgupload']['tmp_name'][$i]);
-			$arr = json_decode($result,true);
-			$urls.="https://ws3.sinaimg.cn/large/".$arr['data']['pics']['pic_1']['pid'].".jpg<br />";
-			$hrefs.="<a style='text-decoration:none;' href='https://ws3.sinaimg.cn/large/".$arr['data']['pics']['pic_1']['pid'].".jpg' target='_blank' title='".$_FILES['webimgupload']['name'][$i]."'>https://ws3.sinaimg.cn/large/".$arr['data']['pics']['pic_1']['pid'].".jpg</a><br />";
-			$codes.="<a href='https://ws3.sinaimg.cn/large/".$arr['data']['pics']['pic_1']['pid'].".jpg' target='_blank' title='".$_FILES['webimgupload']['name'][$i]."'><img src='https://ws3.sinaimg.cn/large/".$arr['data']['pics']['pic_1']['pid'].".jpg' alt='".$_FILES['webimgupload']['name'][$i]."' /></a>\r\n";
-		}
-		$json=json_encode(array("status"=>"ok","msg"=>"上传结果","urls"=>$urls,"hrefs"=>$hrefs,"codes"=>$codes));
-		echo $json;
 		exit;
 	}
 	/*版本检测*/

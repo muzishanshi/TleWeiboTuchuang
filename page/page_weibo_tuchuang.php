@@ -9,6 +9,10 @@ require_once(PATH . '../../../wp-blog-header.php');
 
 try{
 	$weibo_configs = get_settings('tle_weibo_tuchuang');
+	$isMultiple="multiple";
+	if($weibo_configs['tle_weibo_issave']=="y"){
+		$isMultiple="";
+	}
 	?>
 	<html>
 	<head>
@@ -27,7 +31,8 @@ try{
 	<body>
 	<div id="weibofile_webimg_container" onclick="weibofile_file.click()" style="margin:5px 0px;position: relative; border: 2px dashed #e2e2e2; background-image:url('<?=$weibo_configs['tle_webimgbg']?$weibo_configs['tle_webimgbg']:"https://ws3.sinaimg.cn/large/ecabade5ly1fxp3dil4pxj21hc0u0wn1.jpg";?>'); text-align: center; cursor: pointer;height: 100%;">
 		<p id="weibofile_webimg_upload" style="height: <?=$weibo_configs['tle_webimgheight']?$weibo_configs['tle_webimgheight']:"100";?>px;line-height:<?=$weibo_configs['tle_webimgheight']?$weibo_configs['tle_webimgheight']:"100";?>px;position: relative;font-size:20px; color:#d3d3d3;">微博图床</p> 
-		<input type="file" id="weibofile_file" style="display:none" accept="image/*" multiple /> 
+		<input type="file" id="weibofile_file" style="display:none" accept="image/*" <?=$isMultiple;?> /> 
+		<input type="hidden" id="tle_weibo_issave" value="<?=$weibo_configs['tle_weibo_issave'];?>"/>
 	</div>
 	<script>
 	var weibofile_webimgdiv = document.getElementById('weibofile_webimg_upload');
@@ -63,6 +68,7 @@ try{
 		xhr.open("POST", "<?=admin_url('options-general.php?page=tle-weibo-tuchuang&t=uploadWBTCByForeground');?>");
 		xhr.send(data);
 		upLoadFlag = false;
+		weibofile_webimgdiv.innerHTML = '上传中……';
 		xhr.onreadystatechange = function(){
 			if(xhr.readyState == 4 && xhr.status == 200){
 				upLoadFlag = true;
