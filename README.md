@@ -35,6 +35,10 @@ php5.6+WordPress 5.0.2
 Github：https://github.com/muzishanshi/TleWeiboTuchuang
 
 #### 更新记录：
+2019-04-26 V1.0.7
+
+	修复上传目录未做不存在时创建和图片无扩展名的情况
+	
 2019-04-25 V1.0.6
 
 	修复因马虎导致少替换了一个变量。
