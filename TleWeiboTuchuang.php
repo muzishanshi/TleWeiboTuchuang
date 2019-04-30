@@ -129,7 +129,11 @@ if(isset($_GET['t'])){
 					$blogurl=str_replace(".","\.",$blogurl);
 					preg_match_all( "/<(img|IMG).*?src=[\'|\"](?!".$blogurl.")(.*?)[\'|\"].*?[\/]?>/", $post_content, $localmatches );
 					foreach($localmatches[2] as $url){
-						$uploadfile=time().basename($url).".jpg";
+						$basename=basename($url);
+						if(strpos($basename,"?")!== false){
+							$basename=explode("?",$basename)[0];
+						}
+						$uploadfile=time().$basename.".png";
 						$html = file_get_contents($url);
 						file_put_contents(dirname(__FILE__)."/../../uploads/".$uploaddir.$uploadfile, $html);
 						$imgurl=plugins_url()."/../uploads/".$uploaddir.$uploadfile;
