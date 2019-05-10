@@ -2,6 +2,8 @@
 /**
  * 前台阿里图床
  */
+define('PATH', dirname(dirname(__FILE__)).'/');
+require_once(PATH . '../../../wp-blog-header.php');  
 ?>
 <?php
 $ali_configs = get_settings('tle_weibo_tuchuang');
@@ -23,7 +25,7 @@ try{
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/layer/2.3/layer.js"></script>
 	</head>
 	<body>
-	<div id="alifile_webimg_container" onclick="alifile_file.click()" style="margin:5px 0px;position: relative; border: 2px dashed #e2e2e2; background-image:url('<?=$instance['tle_webaliimgbg']?$instance['tle_webaliimgbg']:$ali_configs['tle_aliprefix']."HTB1RdVVVbvpK1RjSZFq763XUVXae.png";?>'); text-align: center; cursor: pointer;height: 100%;">
+	<div id="alifile_webimg_container" onclick="alifile_file.click()" style="margin:5px 0px;position: relative; border: 2px dashed #e2e2e2; background-image:url('<?=$instance['tle_webaliimgbg']?$instance['tle_webaliimgbg']:"https://ae01.alicdn.com/kf/HTB1jpKrVXzqK1RjSZFC762bxVXa1.png";?>'); text-align: center; cursor: pointer;height: 100%;">
 		<p id="alifile_webimg_upload" style="height: <?=$instance['tle_webaliimgheight']?$instance['tle_webaliimgheight']:"100";?>px;line-height:<?=$instance['tle_webaliimgheight']?$instance['tle_webaliimgheight']:"100";?>px;position: relative;font-size:20px; color:#d3d3d3;">阿里图床</p> 
 		<input type="file" id="alifile_file" style="display:none" accept="image/*" multiple /> 
 	</div>
