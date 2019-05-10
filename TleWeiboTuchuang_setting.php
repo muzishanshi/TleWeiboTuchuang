@@ -2,7 +2,7 @@
 	<h2 class="nav-tab-wrapper" style="border-bottom: 1px solid #ccc;">
 	  <a class="nav-tab" href="javascript:;" id="tab-title-setting">微博图床设置</a>
 	  <a class="nav-tab" href="javascript:;" id="tab-title-log">阿里图床设置</a>
-	  <a class="nav-tab" href="javascript:;" id="tab-title-convert">图床转换</a>
+	  <a class="nav-tab" href="javascript:;" id="tab-title-convert" style="display: none;">图床转换</a>
 	  <a class="nav-tab" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=diamond0422@qq.com" target="_blank"  id="tab-title-about"><font color="red">Bug反馈</font></a>
 	</h2>
 	<div id="tab-setting" class="div-tab hidden" style="display: none;" >
@@ -52,66 +52,68 @@
 	</div>
 	<div id="tab-convert" class="div-tab hidden" style="display: none;">
 		<h3>图床转换（每次可转换20篇）</h3>
-		<hr />
-		<small>
-			<font color="red">转换前注意：</font><br />
-			1、此转换功能仅为了解决单篇转换时间长的问题，新浪图床转换阿里图床可能会请求错误。<br />
-			2、此功能主要用于本地化，解决新浪图床防盗链导致的图片无法显示而需要更换的问题，同时也可本地化其他网站的图片链接。<br />
-			3、如果文章内含失效图片链接，暂未考虑此问题，故如出现转换失败情况，需保持良好心态。<br />
-			4、本地化转换阿里图床不支持localhost，阿里图床转换本地化可正常转换。<br />
-			5、因为转换功能并未测试完全，不确保出现各种问题，所以需要测试几次再正式开始转换，但原理都是下载原图片地址，再上传新图片地址，请知悉。
-		</small>
-		<form id="imgpool_conv_form" method="get" action="<?=admin_url('options-general.php');?>">
-			<table width="100%" border="1" cellspacing="0" cellpadding="0">
-				<thead>
-					<caption>
-						<input type="checkbox" id="imgpool_select_all" />全选
-						<input type="radio" name="imgpool_conv_type" value="ali" <?php if($_GET["imgpool_conv_type"]=="ali"){echo "checked";}?> onClick="location.href='<?= admin_url('options-general.php?page=tle-weibo-tuchuang&imgpool_conv_type=ali&imgpool_conv_domain='.$ali_configs["tle_aliprefix"]);?>';" />阿里图床
-						<input type="radio" name="imgpool_conv_type" value="local" <?php if($_GET["imgpool_conv_type"]=="local"){echo "checked";}?> onClick="location.href='<?= admin_url('options-general.php?page=tle-weibo-tuchuang&imgpool_conv_type=local&imgpool_conv_domain='.get_bloginfo("url"));?>';" />本地化
-						<input type="hidden" name="t" value="imgpool_conv" />
-						<input type="hidden" name="page" value="tle-weibo-tuchuang" />
-						<input type="submit" value="开始转换" />
-					</caption>
-					<tr>
-						<th>选项</th>
-						<th>文章</th>
-					</tr>
-				</thead>
-				<tbody align="center">
-					<?php
-					global $wpdb;
-					$domain=str_replace("/","\/",$_GET["imgpool_conv_domain"]);
-					$domain=str_replace(".","\.",$domain);
-					$rlike="<(img|IMG).*?src=[\'|\"](?!".$domain.")(.*?)[\'|\"].*?[\/]?>";
-					$rows = $wpdb->get_results("SELECT * FROM $wpdb->posts WHERE post_content RLIKE '".$rlike."' order by ID desc LIMIT 20");
-					if(!empty($_GET["imgpool_conv_type"])&&!empty($_GET["imgpool_conv_domain"])){
-						if(count($rows)>0){
-							foreach($rows as $val){
+		<div style="display: none;">
+			<hr />
+			<small>
+				<font color="red">转换前注意：</font><br />
+				1、此转换功能仅为了解决单篇转换时间长的问题，新浪图床转换阿里图床可能会请求错误。<br />
+				2、此功能主要用于本地化，解决新浪图床防盗链导致的图片无法显示而需要更换的问题，同时也可本地化其他网站的图片链接。<br />
+				3、如果文章内含失效图片链接，暂未考虑此问题，故如出现转换失败情况，需保持良好心态。<br />
+				4、本地化转换阿里图床不支持localhost，阿里图床转换本地化可正常转换。<br />
+				5、因为转换功能并未测试完全，不确保出现各种问题，所以需要测试几次再正式开始转换，但原理都是下载原图片地址，再上传新图片地址，请知悉。
+			</small>
+			<form id="imgpool_conv_form" method="get" action="<?=admin_url('options-general.php');?>">
+				<table width="100%" border="1" cellspacing="0" cellpadding="0">
+					<thead>
+						<caption>
+							<input type="checkbox" id="imgpool_select_all" />全选
+							<input type="radio" name="imgpool_conv_type" value="ali" <?php if($_GET["imgpool_conv_type"]=="ali"){echo "checked";}?> onClick="location.href='<?= admin_url('options-general.php?page=tle-weibo-tuchuang&imgpool_conv_type=ali&imgpool_conv_domain='.$ali_configs["tle_aliprefix"]);?>';" />阿里图床
+							<input type="radio" name="imgpool_conv_type" value="local" <?php if($_GET["imgpool_conv_type"]=="local"){echo "checked";}?> onClick="location.href='<?= admin_url('options-general.php?page=tle-weibo-tuchuang&imgpool_conv_type=local&imgpool_conv_domain='.get_bloginfo("url"));?>';" />本地化
+							<input type="hidden" name="t" value="imgpool_conv" />
+							<input type="hidden" name="page" value="tle-weibo-tuchuang" />
+							<input type="submit" value="开始转换" />
+						</caption>
+						<tr>
+							<th>选项</th>
+							<th>文章</th>
+						</tr>
+					</thead>
+					<tbody align="center">
+						<?php
+						global $wpdb;
+						$domain=str_replace("/","\/",$_GET["imgpool_conv_domain"]);
+						$domain=str_replace(".","\.",$domain);
+						$rlike="<(img|IMG).*?src=[\'|\"](?!".$domain.")(.*?)[\'|\"].*?[\/]?>";
+						$rows = $wpdb->get_results("SELECT * FROM $wpdb->posts WHERE post_content RLIKE '".$rlike."' order by ID desc LIMIT 20");
+						if(!empty($_GET["imgpool_conv_type"])&&!empty($_GET["imgpool_conv_domain"])){
+							if(count($rows)>0){
+								foreach($rows as $val){
+									?>
+									<tr>
+										<td><input type="checkbox" name="imgpool_postid[]" value="<?=$val->ID;?>" /></td>
+										<td><?=$val->post_title;?></td>
+									</tr>
+									<?php
+								}
+							}else{
 								?>
 								<tr>
-									<td><input type="checkbox" name="imgpool_postid[]" value="<?=$val->ID;?>" /></td>
-									<td><?=$val->post_title;?></td>
+									<td colspan="2">暂无需要转换的文章</td>
 								</tr>
 								<?php
 							}
 						}else{
 							?>
 							<tr>
-								<td colspan="2">暂无需要转换的文章</td>
+								<td colspan="2">首先选择转换方式，以确定转换域名。</td>
 							</tr>
 							<?php
 						}
-					}else{
 						?>
-						<tr>
-							<td colspan="2">首先选择转换方式，以确定转换域名。</td>
-						</tr>
-						<?php
-					}
-					?>
-				</tbody>
-			</table>
-		</form>
+					</tbody>
+				</table>
+			</form>
+		</div>
 	</div>
 	<div id="tab-about" class="div-tab hidden" style="display: none;">
 		
