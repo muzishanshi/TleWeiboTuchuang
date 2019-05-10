@@ -30,8 +30,8 @@ try{
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/layer/2.3/layer.js"></script>
 	</head>
 	<body>
-	<div id="weibofile_webimg_container" onclick="weibofile_file.click()" style="margin:5px 0px;position: relative; border: 2px dashed #e2e2e2; background-image:url('<?=$weibo_configs['tle_webimgbg']?$weibo_configs['tle_webimgbg']:$weibo_configs['tle_weiboprefix']."ecabade5ly1fxp3dil4pxj21hc0u0wn1.jpg";?>'); text-align: center; cursor: pointer;height: 100%;">
-		<p id="weibofile_webimg_upload" style="height: <?=$weibo_configs['tle_webimgheight']?$weibo_configs['tle_webimgheight']:"100";?>px;line-height:<?=$weibo_configs['tle_webimgheight']?$weibo_configs['tle_webimgheight']:"100";?>px;position: relative;font-size:20px; color:#d3d3d3;">微博图床</p> 
+	<div id="weibofile_webimg_container" onclick="weibofile_file.click()" style="margin:5px 0px;position: relative; border: 2px dashed #e2e2e2; background-image:url('<?=$instance['tle_webwbimgbg']?$instance['tle_webwbimgbg']:$weibo_configs['tle_weiboprefix']."ecabade5ly1fxp3dil4pxj21hc0u0wn1.jpg";?>'); text-align: center; cursor: pointer;height: 100%;">
+		<p id="weibofile_webimg_upload" style="height: <?=$instance['tle_webimgwbheight']?$instance['tle_webimgwbheight']:"100";?>px;line-height:<?=$instance['tle_webimgwbheight']?$instance['tle_webimgwbheight']:"100";?>px;position: relative;font-size:20px; color:#d3d3d3;">微博图床</p> 
 		<input type="file" id="weibofile_file" style="display:none" accept="image/*" <?=$isMultiple;?> /> 
 		<input type="hidden" id="tle_weibo_issave" value="<?=$weibo_configs['tle_weibo_issave'];?>"/>
 	</div>

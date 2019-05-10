@@ -2,14 +2,14 @@
 /* 
 Plugin Name: TleWeiboTuchuang
 Plugin URI: https://github.com/muzishanshi/TleWeiboTuchuang
-Description:  新浪微博图床插件支持微博授权和非授权两种方式，并提供前台图传和远程连接、本地链接、微博图床链接之间的转换：1、非授权方式自动利用cookie上传，在文章发布页面增加微博上传功能，使用微博作为图床，更加方便，只需一个微博小号即可实现。（因微博验证或其他权限问题可能会失败几次，可多尝试几个微博小号多上传两次即可。）2、授权方式是利用分享功能可保存至自己的微博相册。
-Version: 1.0.7
+Description:  TleImgPool图池（原新浪微博图床插件）支持微博授权和非授权两种方式，支持阿里图床，并提供前台图传和远程连接、本地链接、微博图床链接、阿里图床链接之间的转换：1、非授权方式自动利用cookie上传，在文章发布页面增加微博上传功能，使用微博作为图床，更加方便，只需一个微博账号即可实现。（因微博验证或其他权限问题可能会失败几次，可多尝试几个微博小号多上传两次即可，亦不可让微博账号有登陆手机或二维码验证权限，如有则需去掉。）2、授权方式是利用分享功能可保存至自己的微博相册。
+Version: 1.0.8
 Author: 二呆
 Author URI: http://www.tongleer.com
 License: 
 */
 global $wpdb;
-define("TLE_WEIBO_TUCHUANG_VERSION",7);
+define("TLE_WEIBO_TUCHUANG_VERSION",8);
 if(!class_exists('Sinaupload')){
 	require_once plugin_dir_path(__FILE__) . 'libs/Sinaupload.php';
 }
@@ -17,7 +17,12 @@ if(!class_exists('Sinaupload')){
 if(isset($_GET['t'])){
 	/*设置参数*/
     if($_GET['t'] == 'updateWBTCConfig'){
-        update_option('tle_weibo_tuchuang', array('tle_weibouser' => $_REQUEST['tle_weibouser'], 'tle_weibopwd' => $_REQUEST['tle_weibopwd'], 'tle_webimgbg' => $_REQUEST['tle_webimgbg'], 'tle_webimgheight' => $_REQUEST['tle_webimgheight'], 'tle_weibo_issave' => $_REQUEST['tle_weibo_issave'],'tle_weiboprefix'=>$_REQUEST['tle_weiboprefix']));
+		$ali_configs = get_settings('tle_weibo_tuchuang');
+        update_option('tle_weibo_tuchuang', array('tle_weibouser' => $_REQUEST['tle_weibouser'], 'tle_weibopwd' => $_REQUEST['tle_weibopwd'], 'tle_weibo_issave' => $_REQUEST['tle_weibo_issave'],'tle_weiboprefix'=>$_REQUEST['tle_weiboprefix'],'tle_aliprefix'=>$ali_configs["tle_aliprefix"]));
+    }
+	if($_GET['t'] == 'updateALTCConfig'){
+		$weibo_configs = get_settings('tle_weibo_tuchuang');
+        update_option('tle_weibo_tuchuang', array('tle_aliprefix' => $_REQUEST['tle_aliprefix'],'tle_weibouser' => $weibo_configs['tle_weibouser'],'tle_weibopwd' => $weibo_configs['tle_weibopwd'],'tle_weibo_issave' => $weibo_configs['tle_weibo_issave'],'tle_weiboprefix'=>$weibo_configs['tle_weiboprefix']));
     }
     /*编辑文章中上传*/
     if($_GET['t'] == 'uploadWBTC'){
@@ -113,6 +118,41 @@ if(isset($_GET['t'])){
 			exit;
 		}
 	}
+	/*转换阿里图床链接*/
+	if($_GET['t']=='updateALTCLinks'){
+		$action = isset($_POST['action']) ? addslashes($_POST['action']) : '';
+		if(!empty($action)){
+			switch ($action) {
+				case 'updateALTCLinks':
+					$request = new WP_Http;
+					$ali_configs = get_settings('tle_weibo_tuchuang');
+					$postid = isset($_POST['postid']) ? addslashes($_POST['postid']) : '';
+					$post_content = get_post($postid)->post_content;
+					$tle_aliprefix=str_replace("/","\/",$ali_configs['tle_aliprefix']);
+					$tle_aliprefix=str_replace(".","\.",$tle_aliprefix);
+					preg_match_all( "/<(img|IMG).*?src=[\'|\"](?!".$tle_aliprefix.")(.*?)[\'|\"].*?[\/]?>/", $post_content, $submatches );
+					foreach($submatches[2] as $url){
+						$result = $request->request('https://www.tongleer.com/api/web/?action=weiboimg&imgurl='.$url);
+						$arr=json_decode($result["body"],true);
+						if(isset($arr['data']["src"])){
+							$imgurl=$ali_configs['tle_aliprefix'].basename($arr['data']["src"]);
+							$post_content=str_replace($url,$imgurl,$post_content);
+							
+							if(strpos($url,get_bloginfo("url"))!== false){
+								$path=str_replace(get_bloginfo("url"),"",$url);
+								$oldpath=plugin_dir_path(__FILE__)."../../..".$path;
+								@unlink($oldpath);
+							}
+						}
+					}
+					$wpdb->update($wpdb->prefix."posts",array('post_content'=>$post_content),array("ID"=>$postid));
+					$json=json_encode(array("status"=>"ok","msg"=>"转换成功"));
+					echo $json;
+					break;
+			}
+			exit;
+		}
+	}
 	/*本地化微博图床链接*/
 	if($_GET['t']=='localWBTCLinks'){
 		$action = isset($_POST['action']) ? addslashes($_POST['action']) : '';
@@ -136,11 +176,80 @@ if(isset($_GET['t'])){
 						$uploadfile=time().$basename.".png";
 						$html = file_get_contents($url);
 						file_put_contents(dirname(__FILE__)."/../../uploads/".$uploaddir.$uploadfile, $html);
-						$imgurl=plugins_url()."/../uploads/".$uploaddir.$uploadfile;
+						$imgurl=home_url()."/wp-content/uploads/".$uploaddir.$uploadfile;
 						$post_content=str_replace($url,$imgurl,$post_content);
 					}
 					$result=$wpdb->update($wpdb->prefix."posts",array('post_content'=>$post_content),array("ID"=>$postid));
 					$json=json_encode(array("status"=>"ok","msg"=>"本地化成功"));
+					echo $json;
+					break;
+			}
+			exit;
+		}
+	}
+	/*批量转换图片链接*/
+	if($_GET['t']=='imgpool_conv'){
+		$imgpool_conv_type = isset($_POST['imgpool_conv_type']) ? addslashes($_POST['imgpool_conv_type']) : '';
+		if(!empty($imgpool_conv_type)){
+			switch ($imgpool_conv_type) {
+				case 'local':
+					/*批量本地化*/
+					$uploaddir=date("Y")."/".date("m")."/";
+					if(!is_dir(dirname(__FILE__)."/../../uploads/".$uploaddir)){
+						mkdir (dirname(__FILE__)."/../../uploads/".$uploaddir, 0777, true );
+					}
+					$domain = isset($_GET['imgpool_conv_domain']) ? addslashes($_GET['imgpool_conv_domain']) : '';
+					$imgpool_postid = isset($_POST['imgpool_postid']) ? array_map('intval', $_POST['imgpool_postid']) : array();
+					foreach($imgpool_postid as $id){
+						$post_content = get_post($id)->post_content;
+						$domain=str_replace("/","\/",$domain);
+						$domain=str_replace(".","\.",$domain);
+						preg_match_all( "/<(img|IMG).*?src=[\'|\"](?!".$domain.")(.*?)[\'|\"].*?[\/]?>/", $post_content, $localmatches );
+						foreach($localmatches[2] as $url){
+							$basename=basename($url);
+							if(strpos($basename,"?")!== false){
+								$basename=explode("?",$basename)[0];
+							}
+							$uploadfile=time().$basename.".png";
+							$html = file_get_contents($url);
+							file_put_contents(dirname(__FILE__)."/../../uploads/".$uploaddir.$uploadfile, $html);
+							$imgurl=home_url()."/wp-content/uploads/".$uploaddir.$uploadfile;
+							$post_content=str_replace($url,$imgurl,$post_content);
+						}
+						$result=$wpdb->update($wpdb->prefix."posts",array('post_content'=>$post_content),array("ID"=>$id));
+					}
+					$json=json_encode(array("status"=>"ok","msg"=>"本地化成功"));
+					echo $json;
+					break;
+				case 'ali':
+					/*批量阿里图床*/
+					$request = new WP_Http;
+					$ali_configs = get_settings('tle_weibo_tuchuang');
+					$domain = isset($_GET['imgpool_conv_domain']) ? addslashes($_GET['imgpool_conv_domain']) : '';
+					$imgpool_postid = isset($_POST['imgpool_postid']) ? array_map('intval', $_POST['imgpool_postid']) : array();
+					foreach($imgpool_postid as $id){
+						$post_content = get_post($id)->post_content;
+						$domain=str_replace("/","\/",$domain);
+						$domain=str_replace(".","\.",$domain);
+						preg_match_all( "/<(img|IMG).*?src=[\'|\"](?!".$domain.")(.*?)[\'|\"].*?[\/]?>/", $post_content, $submatches );
+						foreach($submatches[2] as $url){
+							$result = $request->request('https://www.tongleer.com/api/web/?action=weiboimg&imgurl='.$url);
+							$arr=json_decode($result["body"],true);
+							if(isset($arr['data']["src"])){
+								$imgurl=$domain.basename($arr['data']["src"]);
+								$imgurl=str_replace("\\","",$imgurl);
+								$post_content=str_replace($url,$imgurl,$post_content);
+								
+								if(strpos($url,get_bloginfo("url"))!== false){
+									$path=str_replace(get_bloginfo("url"),"",$url);
+									$oldpath=plugin_dir_path(__FILE__)."../../..".$path;
+									@unlink($oldpath);
+								}
+							}
+						}
+						$wpdb->update($wpdb->prefix."posts",array('post_content'=>$post_content),array("ID"=>$id));
+					}
+					$json=json_encode(array("status"=>"ok","msg"=>"转换成功"));
 					echo $json;
 					break;
 			}
@@ -234,17 +343,29 @@ function tle_weibo_tuchuang_render_post_columns($column_name, $id) {
 		$post_content = get_post($id)->post_content;
 		preg_match_all( "/<(img|IMG).*?src=[\'|\"](.*?)[\'|\"].*?[\/]?>/", $post_content, $matches );
 		if(count($matches[2])>0){
-			//转换微博图传链接
+			//转换微博图床链接
 			$weibo_configs = get_settings('tle_weibo_tuchuang');
 			$tle_weiboprefix=str_replace("/","\/",$weibo_configs['tle_weiboprefix']);
 			$tle_weiboprefix=str_replace(".","\.",$tle_weiboprefix);
 			preg_match_all( "/<(img|IMG).*?src=[\'|\"](?!".$tle_weiboprefix.")(.*?)[\'|\"].*?[\/]?>/", $post_content, $submatches );
 			if(count($submatches[2])>0){
 				echo '
-					<a href="javascript:;" class="tle_weibo_tuchuang_convert_id" id="tle_weibo_tuchuang_convert_id'.$id.'" data-id="'.$id.'">转换</a>
+					<a href="javascript:;" class="tle_weibo_tuchuang_convert_id" id="tle_weibo_tuchuang_convert_id'.$id.'" data-id="'.$id.'">转换微博</a>
 				';
 			}else{
-				echo '无需转换';
+				echo '无需转换微博';
+			}
+			//转换微博图床链接
+			$ali_configs = get_settings('tle_weibo_tuchuang');
+			$tle_aliprefix=str_replace("/","\/",$ali_configs['tle_aliprefix']);
+			$tle_aliprefix=str_replace(".","\.",$tle_aliprefix);
+			preg_match_all( "/<(img|IMG).*?src=[\'|\"](?!".$tle_aliprefix.")(.*?)[\'|\"].*?[\/]?>/", $post_content, $submatches );
+			if(count($submatches[2])>0){
+				echo '
+					<a href="javascript:;" class="tle_imgpool_ali_convert_id" id="tle_imgpool_ali_convert_id'.$id.'" data-id="'.$id.'">转换阿里</a>
+				';
+			}else{
+				echo '无需转换阿里';
 			}
 			//图片本地化
 			$blogurl=str_replace("/","\/",get_bloginfo("url"));
@@ -323,103 +444,19 @@ function add_my_media_button() {
 			}
 		</style>
 		<a href="javascript:;" class="weibo-upload"><input type="file" id="inputWeiboFile" '.$isMultiple.' />微博图床</a>
+		<a href="javascript:;" class="weibo-upload"><input type="file" id="inputAliFile" '.$isMultiple.' />阿里图床</a>
 	';
 }
-add_action('add_meta_boxes', 'tle_weibo_tuchuang_post_box');
-function tle_weibo_tuchuang_post_box(){
-    add_meta_box('tle_weibo_tuchuang_div', __('微博图床'), 'tle_weibo_tuchuang_post_html', 'post', 'side');
+add_action('add_meta_boxes', 'tle_imgpool_post_box');
+function tle_imgpool_post_box(){
+	add_meta_box('tle_imgpool_ali_div', __('阿里图床'), 'tle_imgpool_ali_post_html', 'post', 'side');
+    add_meta_box('tle_imgpool_weibo_div', __('微博图床'), 'tle_imgpool_weibo_post_html', 'post', 'side');
 }
-function tle_weibo_tuchuang_post_html(){
-	$weibo_configs = get_settings('tle_weibo_tuchuang');
-	$isMultiple="multiple";
-	if($weibo_configs['tle_weibo_issave']=="y"){
-		$isMultiple="";
-	}
-	echo '<script>var tle_weibo_tuchuang_post_url="' . admin_url('options-general.php?page=tle-weibo-tuchuang&t=uploadWBTC') . '";</script>';
-   ?>
-   <div id="tle_weibo_tuchuang_post" style="width:auto;height:100px;border:3px dashed silver;line-height:100px; text-align:center; font-size:20px; color:#d3d3d3;cursor:pointer;">将图片拖拽到此区域上传</div>
-   <input type="file" <?=$isMultiple;?> id="tle_weibo_tuchuang_input" style="position: absolute;display: block;top:0;left:0;bottom:0;right:0;opacity: 0;-moz-opacity: 0;filter:alpha(opacity=0);cursor:pointer;" />
-   <script>
-   window.onload = function(){
-	var div = document.getElementById('tle_weibo_tuchuang_post');
-	var input = document.getElementById('tle_weibo_tuchuang_input');
-	var input2 = document.getElementById('inputWeiboFile');
-	
-	document.ondragenter = document.ondrop = document.ondragover = function(e){
-        e.preventDefault();
-        div.style.display = 'block';
-    }
-    div.ondragenter = function(e){
-        div.innerHTML = '松开开始上传';
-        e.preventDefault();
-    }
-    div.ondragleave = function(e){
-        div.innerHTML = '离开取消上传';
-        e.preventDefault();
-    }
-    div.ondragover = function(e){
-        e.preventDefault();
-    }
-	function upLoad(file){
-		var xhr = new XMLHttpRequest();
-		var data;
-        var upLoadFlag = true;
-		if(upLoadFlag === false){
-			alert('正在上传中……请稍后……');
-			return;
-		}
-		if(!file){
-			alert('不选择图片上传了吗……');
-			return;
-		}
-		data = new FormData();
-		for (var i=0;i<file.length;i++){
-			if(file[i] && file[i].type.indexOf('image') === -1){
-				alert('这不是一张图片……请重新选择……');
-				return;
-			}
-			data.append('tle_weibo_tuchuang['+i+']', file[i]);
-		}
-		xhr.open("POST", tle_weibo_tuchuang_post_url);
-        xhr.send(data);
-		upLoadFlag = false;
-		div.innerHTML = '正在上传中……请稍后……';
-		xhr.onreadystatechange = function(){
-			if(xhr.readyState == 4 && xhr.status == 200){
-				upLoadFlag = true;
-				div.innerHTML = '将图片拖拽到此区域上传';
-				tinyMCE.activeEditor.execCommand('mceInsertContent', 0, "\n"+xhr.responseText+"\n");
-			}
-		}
-    }
-	
-	var dropHandler = function(e){
-		var file;
-		e.preventDefault();
-		file = e.dataTransfer.files && e.dataTransfer.files;
-		upLoad(file);
-	}
-	var inputFileHandler = function(){
-		var file = input.files;
-		upLoad(file);
-	}
-	var inputFileHandler2 = function(){
-		var file2 = input2.files;
-		upLoad(file2);
-	}
-	document.body.addEventListener('drop', function(e) {
-		dropHandler(e);
-	}, false);
-	
-	input.addEventListener('change', function() {
-		inputFileHandler();
-	}, false);
-	$("#inputWeiboFile").change(function(){
-		inputFileHandler2();
-	});
-   }
-   </script>
-   <?php
+function tle_imgpool_ali_post_html(){
+	include "TleWeiboTuchuang_alihtml.php";
+}
+function tle_imgpool_weibo_post_html(){
+	include "TleWeiboTuchuang_wbhtml.php";
 }
 
 add_action('admin_menu', 'tle_weibo_tuchuang_menu');
@@ -427,59 +464,66 @@ function tle_weibo_tuchuang_menu(){
     add_options_page('微博图床', '微博图床', 'manage_options', 'tle-weibo-tuchuang', 'tle_weibo_tuchuang_options');
 }
 function tle_weibo_tuchuang_options(){
-    $weibo_configs = get_settings('tle_weibo_tuchuang');
-	?>
-	<div class="wrap">
-		<h2>微博图床设置</h2>
-		<form method="get" action="">
-			<p>
-				是否保存到微博相册(需开启<a href="https://github.com/muzishanshi/TleWeiboSyncV2" target="_blank">微博同步插件</a>)：
-				<input type="radio" name="tle_weibo_issave" value="n" <?=isset($weibo_configs['tle_weibo_issave'])?($weibo_configs['tle_weibo_issave']=="n"?"checked":""):"checked";?> />否
-				<input type="radio" name="tle_weibo_issave" value="y" <?=isset($weibo_configs['tle_weibo_issave'])?($weibo_configs['tle_weibo_issave']=="y"?"checked":""):"";?> />是
-			</p>
-			<p>
-				<input type="text" name="tle_weibouser" placeholder="微博小号用户名" value="<?=$weibo_configs['tle_weibouser'];?>" />
-			</p>
-			<p>
-				<input type="password" name="tle_weibopwd" placeholder="微博小号密码" value="<?=$weibo_configs['tle_weibopwd'];?>" />
-			</p>
-			<p>
-				<input type="text" name="tle_weiboprefix" placeholder="图片链接前缀" value="<?=$weibo_configs['tle_weiboprefix']?$weibo_configs['tle_weiboprefix']:"https://ws3.sinaimg.cn/large/";?>" />
-			</p>
-			<p>
-				<input type="text" name="tle_webimgbg" placeholder="前台图床背景" value="<?=$weibo_configs['tle_webimgbg'];?>" />
-			</p>
-			<p>
-				<input type="number" name="tle_webimgheight" placeholder="前台图床高度" value="<?=$weibo_configs['tle_webimgheight'];?>" />
-			</p>
-			<p>
-				<input type="hidden" name="t" value="updateWBTCConfig" />
-				<input type="hidden" name="page" value="tle-weibo-tuchuang" />
-				<input type="submit" value="修改" />
-			</p>
-			<p>
-				特别注意：<br />
-				1、在微博同步插件中，微博开放平台的安全域名要与网站域名一致；<br />
-				2、保存到微博相册时，如果频繁会禁用当前微博的接口，所以每次只能上传一张图片；<br />
-				3、不保存到微博相册时，设置微博小号后可多尝试多上传几次，上传成功尽量不要将此微博小号登录微博系的网站、软件，可以登录，但不确定会不会上传失败，上传失败了再重新上传2次同样可以正常上传，如果小号等级过低，可尝试微博大号，微博账号不能有手机、二维码验证权限，插件可正常使用，无需担心。
-			</p>
-		</form>
-	</div>
-	<?php
+	include "TleWeiboTuchuang_setting.php";
 }
-/*前台图床小工具*/
+/*前台微博图床小工具*/
 add_action( 'widgets_init', 'tle_weibo_tuchuang_foreground' );
 function tle_weibo_tuchuang_foreground() {
 	register_widget( 'tle_weibo_tuchuang_foreground' );
 }
 class tle_weibo_tuchuang_foreground extends WP_Widget {
 	function tle_weibo_tuchuang_foreground() {
-		$widget_ops = array( 'classname' => 'tle_weibo_tuchuang_foreground', 'description' => '显示前台图床' );
+		$widget_ops = array( 'classname' => 'tle_weibo_tuchuang_foreground', 'description' => '显示前台微博图床' );
 		$this->WP_Widget( 'tle_weibo_tuchuang_foreground', '微博图床', $widget_ops, $control_ops );
 	}
 	function widget( $args, $instance ) {
 		include "page/page_weibo_tuchuang.php";
 	}
-	function form($instance) {}
+	function form($instance) {
+		?>
+		<p>
+			<label>
+				背景：
+				<input style="width:100%;" id="<?php echo $this->get_field_id('tle_webwbimgbg'); ?>" name="<?php echo $this->get_field_name('tle_webwbimgbg'); ?>" type="text" value="<?php echo $instance['tle_webwbimgbg']; ?>" />
+			</label>
+		</p>
+		<p>
+			<label>
+				高度：
+				<input style="width:100%;" id="<?php echo $this->get_field_id('tle_webimgwbheight'); ?>" name="<?php echo $this->get_field_name('tle_webimgwbheight'); ?>" type="text" value="<?php echo $instance['tle_webimgwbheight']; ?>" />
+			</label>
+		</p>
+		<?php
+	}
+}
+/*前台阿里图床小工具*/
+add_action( 'widgets_init', 'tle_imgpool_ali_foreground' );
+function tle_imgpool_ali_foreground() {
+	register_widget( 'tle_imgpool_ali_foreground' );
+}
+class tle_imgpool_ali_foreground extends WP_Widget {
+	function tle_imgpool_ali_foreground() {
+		$widget_ops = array( 'classname' => 'tle_imgpool_ali_foreground', 'description' => '显示前台阿里图床' );
+		$this->WP_Widget( 'tle_imgpool_ali_foreground', '阿里图床', $widget_ops, $control_ops );
+	}
+	function widget( $args, $instance ) {
+		include "page/page_ali_tuchuang.php";
+	}
+	function form($instance) {
+		?>
+		<p>
+			<label>
+				背景：
+				<input style="width:100%;" id="<?php echo $this->get_field_id('tle_webaliimgbg'); ?>" name="<?php echo $this->get_field_name('tle_webaliimgbg'); ?>" type="text" value="<?php echo $instance['tle_webaliimgbg']; ?>" />
+			</label>
+		</p>
+		<p>
+			<label>
+				高度：
+				<input style="width:100%;" id="<?php echo $this->get_field_id('tle_webimgaliheight'); ?>" name="<?php echo $this->get_field_name('tle_webimgaliheight'); ?>" type="text" value="<?php echo $instance['tle_webimgaliheight']; ?>" />
+			</label>
+		</p>
+		<?php
+	}
 }
 ?>

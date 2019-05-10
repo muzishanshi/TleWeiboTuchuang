@@ -11,6 +11,18 @@ $(function(){
 			});
 		});
 	});
+	$(".tle_imgpool_ali_convert_id").each(function(){
+		var id=$(this).attr("id");
+		$("#"+id).click( function () {
+			$.post("admin.php?page=tle-weibo-tuchuang&t=updateALTCLinks",{action:"updateALTCLinks",postid:$(this).attr("data-id")},function(data){
+				var data=JSON.parse(data);
+				if(data.status=="noneconfig"){
+					alert(data.msg);
+				}
+				window.location.reload();
+			});
+		});
+	});
 	$(".tle_weibo_tuchuang_local_id").each(function(){
 		var id=$(this).attr("id");
 		$("#"+id).click( function () {
