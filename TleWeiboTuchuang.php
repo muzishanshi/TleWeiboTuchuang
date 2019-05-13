@@ -444,7 +444,7 @@ function add_my_media_button() {
 			}
 		</style>
 		<a href="javascript:;" class="weibo-upload"><input type="file" id="inputWeiboFile" '.$isMultiple.' />微博图床</a>
-		<a href="javascript:;" class="weibo-upload"><input type="file" id="inputAliFile" '.$isMultiple.' />阿里图床</a>
+		<a href="javascript:;" class="weibo-upload"><input type="file" id="inputAliFile" multiple />阿里图床</a>
 	';
 }
 add_action('add_meta_boxes', 'tle_imgpool_post_box');
