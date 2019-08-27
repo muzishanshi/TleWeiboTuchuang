@@ -3,13 +3,13 @@
 Plugin Name: TleWeiboTuchuang
 Plugin URI: https://github.com/muzishanshi/TleWeiboTuchuang
 Description:  TleImgPool图池（原新浪微博图床插件）支持微博授权和非授权两种方式，支持阿里图床，并提供前台图传和远程连接、本地链接、微博图床链接、阿里图床链接之间的转换：1、非授权方式自动利用cookie上传，在文章发布页面增加微博上传功能，使用微博作为图床，更加方便，只需一个微博账号即可实现。（因微博验证或其他权限问题可能会失败几次，可多尝试几个微博小号多上传两次即可，亦不可让微博账号有登陆手机或二维码验证权限，如有则需去掉。）2、授权方式是利用分享功能可保存至自己的微博相册。
-Version: 1.0.8
+Version: 1.0.9
 Author: 二呆
 Author URI: http://www.tongleer.com
 License: 
 */
 global $wpdb;
-define("TLE_WEIBO_TUCHUANG_VERSION",8);
+define("TLE_WEIBO_TUCHUANG_VERSION",9);
 if(!class_exists('Sinaupload')){
 	require_once plugin_dir_path(__FILE__) . 'libs/Sinaupload.php';
 }
@@ -171,7 +171,8 @@ if(isset($_GET['t'])){
 					foreach($localmatches[2] as $url){
 						$basename=basename($url);
 						if(strpos($basename,"?")!== false){
-							$basename=explode("?",$basename)[0];
+							$basenames=explode("?",$basename);
+							$basename=$basenames[0];
 						}
 						$uploadfile=time().$basename.".png";
 						$html = file_get_contents($url);
@@ -208,7 +209,8 @@ if(isset($_GET['t'])){
 						foreach($localmatches[2] as $url){
 							$basename=basename($url);
 							if(strpos($basename,"?")!== false){
-								$basename=explode("?",$basename)[0];
+								$basenames=explode("?",$basename);
+								$basename=$basenames[0];
 							}
 							$uploadfile=time().$basename.".png";
 							$html = file_get_contents($url);
