@@ -506,7 +506,7 @@ function tle_weibo_tuchuang_add_link( $actions, $plugin_file ) {
     $plugin = plugin_basename(__FILE__);
   if ($plugin == $plugin_file) {
       $settings = array('settings' => '<a href="admin.php?page=tle-weibo-tuchuang">' . __('Settings') . '</a>');
-      $site_link  = array('version'=>'<span id="versionCodeWBTC" data-code="'.TLE_WEIBO_TUCHUANG_VERSION.'"></span><br />','contact' => '<a href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=diamond0422@qq.com" target="_blank">反馈</a>','support' => '<a href="https://www.tongleer.com/api/web/pay.png" target="_blank">打赏</a>','club' => '<a href="http://club.tongleer.com" target="_blank">论坛</a>');
+      $site_link  = array('version'=>'<span id="versionCodeWBTC" data-code="'.TLE_WEIBO_TUCHUANG_VERSION.'"></span>','contact' => '<a href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=diamond0422@qq.com" target="_blank">反馈</a>','support' => '<a href="https://www.tongleer.com/api/web/pay.png" target="_blank">打赏</a>','club' => '<a href="http://club.tongleer.com" target="_blank">论坛</a>');
       $actions  = array_merge($settings, $actions);
       $actions  = array_merge($site_link, $actions);
   }
