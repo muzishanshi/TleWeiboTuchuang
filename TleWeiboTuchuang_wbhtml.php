@@ -1,4 +1,3 @@
-<script src="https://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
 <?php
 $weibo_configs = get_settings('tle_weibo_tuchuang');
 $isMultiple="multiple";
@@ -7,14 +6,13 @@ if($weibo_configs['tle_weibo_issave']=="y"){
 }
 echo '<script>var tle_weibo_tuchuang_post_url="' . admin_url('options-general.php?page=tle-weibo-tuchuang&t=uploadWBTC') . '";</script>';
 ?>
-<div id="tle_weibo_tuchuang_post" style="width:auto;height:100px;border:3px dashed silver;line-height:100px; text-align:center; font-size:20px; color:#d3d3d3;cursor:pointer;">将图片拖拽到此区域上传</div>
+<div id="tle_weibo_tuchuang_post" style="width:auto;height:100px;border:3px dashed silver;line-height:100px; text-align:center; font-size:20px; color:#d3d3d3;cursor:pointer;">点击此区域上传图片</div>
 <input type="file" <?=$isMultiple;?> id="tle_weibo_tuchuang_input" style="position: absolute;display: block;top:0;left:0;bottom:0;right:0;opacity: 0;-moz-opacity: 0;filter:alpha(opacity=0);cursor:pointer;" />
 <script>
-$(function(){
-	var div = document.getElementById('tle_weibo_tuchuang_post');
+/*$(function(){*/
 	var input = document.getElementById('tle_weibo_tuchuang_input');
-	var input2 = document.getElementById('inputWeiboFile');
-
+	/*
+	var div = document.getElementById('tle_weibo_tuchuang_post');
 	document.ondragenter = document.ondrop = document.ondragover = function(e){
 		e.preventDefault();
 		div.style.display = 'block';
@@ -30,6 +28,16 @@ $(function(){
 	div.ondragover = function(e){
 		e.preventDefault();
 	}
+	var dropHandler = function(e){
+		var file;
+		e.preventDefault();
+		file = e.dataTransfer.files && e.dataTransfer.files;
+		upLoad(file);
+	}
+	document.body.addEventListener('drop', function(e) {
+		dropHandler(e);
+	}, false);
+	*/
 	function upLoad(file){
 		var xhr = new XMLHttpRequest();
 		var data;
@@ -53,39 +61,23 @@ $(function(){
 		xhr.open("POST", tle_weibo_tuchuang_post_url);
 		xhr.send(data);
 		upLoadFlag = false;
-		div.innerHTML = '正在上传中……请稍后……';
+		document.getElementById('tle_weibo_tuchuang_post').innerHTML = '正在上传中……请稍后……';
 		xhr.onreadystatechange = function(){
 			if(xhr.readyState == 4 && xhr.status == 200){
 				upLoadFlag = true;
-				div.innerHTML = '将图片拖拽到此区域上传';
+				document.getElementById('tle_weibo_tuchuang_post').innerHTML = '点击此区域上传图片';
 				tinyMCE.activeEditor.execCommand('mceInsertContent', 0, "\n"+xhr.responseText+"\n");
 			}
 		}
 	}
-
-	var dropHandler = function(e){
-		var file;
-		e.preventDefault();
-		file = e.dataTransfer.files && e.dataTransfer.files;
-		upLoad(file);
-	}
-	var inputFileHandler = function(){
+	
+	function inputFileHandler(){
 		var file = input.files;
 		upLoad(file);
 	}
-	var inputFileHandler2 = function(){
-		var file2 = input2.files;
-		upLoad(file2);
-	}
-	document.body.addEventListener('drop', function(e) {
-		dropHandler(e);
-	}, false);
 
 	input.addEventListener('change', function() {
 		inputFileHandler();
 	}, false);
-	$("#inputWeiboFile").change(function(){
-		inputFileHandler2();
-	});
-});
+/*});*/
 </script>

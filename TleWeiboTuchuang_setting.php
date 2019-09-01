@@ -7,21 +7,29 @@
 	</h2>
 	<div id="tab-setting" class="div-tab hidden" style="display: none;" >
 		<h3>微博图床设置</h3>
+		<small><font color="red">因微博官方限制，故微博图床只能开启<a href="https://github.com/muzishanshi/TleWeiboSyncV2" target="_blank">微博同步插件</a>后配合使用。</font></small>
 		<form method="get" action="">
 			<?php $weibo_configs = get_settings('tle_weibo_tuchuang');?>
 			<p>
-				是否保存到微博相册(需开启<a href="https://github.com/muzishanshi/TleWeiboSyncV2" target="_blank">微博同步插件</a>)：
+				是否保存到微博相册：
+				<!--
 				<input type="radio" name="tle_weibo_issave" value="n" <?=isset($weibo_configs['tle_weibo_issave'])?($weibo_configs['tle_weibo_issave']=="n"?"checked":""):"checked";?> />否
+				-->
 				<input type="radio" name="tle_weibo_issave" value="y" <?=isset($weibo_configs['tle_weibo_issave'])?($weibo_configs['tle_weibo_issave']=="y"?"checked":""):"";?> />是
 			</p>
 			<p>
-				<input type="text" name="tle_weibouser" placeholder="微博小号用户名" value="<?=$weibo_configs['tle_weibouser'];?>" />
+				是否启用https链接：
+				<input type="radio" name="tle_weibo_https" value="n" <?=isset($weibo_configs['tle_weibo_https'])?($weibo_configs['tle_weibo_https']=="n"?"checked":""):"checked";?> />否
+				<input type="radio" name="tle_weibo_https" value="y" <?=isset($weibo_configs['tle_weibo_https'])?($weibo_configs['tle_weibo_https']=="y"?"checked":""):"";?> />是
 			</p>
 			<p>
-				<input type="password" name="tle_weibopwd" placeholder="微博小号密码" value="<?=$weibo_configs['tle_weibopwd'];?>" />
+				<input type="hidden" name="tle_weibouser" placeholder="微博小号用户名" value="<?=$weibo_configs['tle_weibouser'];?>" />
 			</p>
 			<p>
-				<input type="text" name="tle_weiboprefix" placeholder="图片链接前缀" value="<?=$weibo_configs['tle_weiboprefix']?$weibo_configs['tle_weiboprefix']:"https://ws3.sinaimg.cn/large/";?>" />
+				<input type="hidden" name="tle_weibopwd" placeholder="微博小号密码" value="<?=$weibo_configs['tle_weibopwd'];?>" />
+			</p>
+			<p>
+				<input type="hidden" name="tle_weiboprefix" placeholder="图片链接前缀" value="<?=$weibo_configs['tle_weiboprefix']?$weibo_configs['tle_weiboprefix']:"https://ws3.sinaimg.cn/large/";?>" />
 			</p>
 			<p>
 				<input type="hidden" name="t" value="updateWBTCConfig" />
@@ -32,7 +40,10 @@
 				特别注意：<br />
 				1、在微博同步插件中，微博开放平台的安全域名要与网站域名一致；<br />
 				2、保存到微博相册时，如果频繁会禁用当前微博的接口，所以每次只能上传一张图片；<br />
-				3、不保存到微博相册时，设置微博小号后可多尝试多上传几次，上传成功尽量不要将此微博小号登录微博系的网站、软件，可以登录，但不确定会不会上传失败，上传失败了再重新上传2次同样可以正常上传，如果小号等级过低，可尝试微博大号，微博账号不能有手机、二维码验证权限，插件可正常使用，无需担心。
+				3、<font color='blue'>若选择启用https链接，则会受微博防盗链影响，须要在网站的head标签中加入&lt;meta name='referrer' content='same-origin'>代码才能显示。</font><br />
+				<font color="#eee">
+				4、不保存到微博相册时，设置微博小号后可多尝试多上传几次，上传成功尽量不要将此微博小号登录微博系的网站、软件，可以登录，但不确定会不会上传失败，上传失败了再重新上传2次同样可以正常上传，如果小号等级过低，可尝试微博大号，微博账号不能有手机、二维码验证权限，插件可正常使用，无需担心。
+				</font>
 			</p>
 		</form>
 	</div>
