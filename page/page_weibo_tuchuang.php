@@ -26,8 +26,8 @@ try{
 		<meta name="author" content="同乐儿">
 		<meta name="referrer" content="never" />
 		<link rel="alternate icon" href="<?=$weibo_configs['tle_weiboprefix'];?>ecabade5ly1fxpiemcap1j200s00s744.jpg" type="image/png" />
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/layer/2.3/layer.js"></script>
+		<script src="https://apps.bdimg.com/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script src="https://www.tongleer.com/api/web/include/layui/layui.js"></script>
 	</head>
 	<body>
 	<div id="weibofile_webimg_container" onclick="weibofile_file.click()" style="margin:5px 0px;position: relative; border: 2px dashed #e2e2e2; background-image:url('<?=$instance['tle_webwbimgbg']?$instance['tle_webwbimgbg']:"https://ae01.alicdn.com/kf/HTB1jpKrVXzqK1RjSZFC762bxVXa1.png";?>'); text-align: center; cursor: pointer;height: 100%;">
@@ -46,50 +46,53 @@ try{
 		upLoad(file);
 	}
 	function upLoad(file){
-		var xhr = new XMLHttpRequest();
-		var data;
-		var upLoadFlag = true;
-		if(upLoadFlag === false){
-			layer.msg('正在上传中……请稍后……');
-			return;
-		}
-		if(!file){
-			layer.msg('不要上传图片了吗……');
-			return;
-		}
-		data = new FormData();
-		data.append('action', 'imageUpload');
-		for (var i=0;i<file.length;i++){
-			if(file[i] && file[i].type.indexOf('image') === -1){
-				layer.msg('这不是一张图片……请重新选择……');
+		layui.use('layer', function(){
+			var $ = layui.jquery, layer = layui.layer;
+			var xhr = new XMLHttpRequest();
+			var data;
+			var upLoadFlag = true;
+			if(upLoadFlag === false){
+				layer.msg('正在上传中……请稍后……');
 				return;
 			}
-			data.append('webimgupload['+i+']', file[i]);
-		}
-		xhr.open("POST", "<?=admin_url('options-general.php?page=tle-weibo-tuchuang&t=uploadWBTCByForeground');?>");
-		xhr.send(data);
-		upLoadFlag = false;
-		weibofile_webimgdiv.innerHTML = '上传中……';
-		xhr.onreadystatechange = function(){
-			if(xhr.readyState == 4 && xhr.status == 200){
-				upLoadFlag = true;
-				var data=JSON.parse(xhr.responseText);
-				if(data.status=="noset"){
-					weibofile_webimgdiv.innerHTML = data.msg;
-				}else if(data.status=="disable"){
-					weibofile_webimgdiv.innerHTML = data.msg;
-				}else if(data.status=="ok"){
-					weibofile_webimgdiv.innerHTML = '微博图床';
-					layer.confirm('<small><font color="green">'+data.msg+'<br />'+data.hrefs+'</font></small><textarea style="width:100%;margin: 0 auto;" rows="2" onfocus="this.select();">'+data.codes+'</textarea>', {
-						btn: ['关闭']
-					},function(index){
-						layer.close(index);
-					});
-					var urls=data.urls.split("<br />");
-					document.getElementById('weibofile_webimg_container').style.backgroundImage = "url("+urls[0]+")";
+			if(!file){
+				layer.msg('不要上传图片了吗……');
+				return;
+			}
+			data = new FormData();
+			data.append('action', 'imageUpload');
+			for (var i=0;i<file.length;i++){
+				if(file[i] && file[i].type.indexOf('image') === -1){
+					layer.msg('这不是一张图片……请重新选择……');
+					return;
+				}
+				data.append('webimgupload['+i+']', file[i]);
+			}
+			xhr.open("POST", "<?=admin_url('options-general.php?page=tle-weibo-tuchuang&t=uploadWBTCByForeground');?>");
+			xhr.send(data);
+			upLoadFlag = false;
+			weibofile_webimgdiv.innerHTML = '上传中……';
+			xhr.onreadystatechange = function(){
+				if(xhr.readyState == 4 && xhr.status == 200){
+					upLoadFlag = true;
+					var data=JSON.parse(xhr.responseText);
+					if(data.status=="noset"){
+						weibofile_webimgdiv.innerHTML = data.msg;
+					}else if(data.status=="disable"){
+						weibofile_webimgdiv.innerHTML = data.msg;
+					}else if(data.status=="ok"){
+						weibofile_webimgdiv.innerHTML = '微博图床';
+						layer.confirm('<small><font color="green">'+data.msg+'<br />'+data.hrefs+'</font></small><textarea style="width:100%;margin: 0 auto;" rows="2" onfocus="this.select();">'+data.codes+'</textarea>', {
+							btn: ['关闭']
+						},function(index){
+							layer.close(index);
+						});
+						var urls=data.urls.split("<br />");
+						document.getElementById('weibofile_webimg_container').style.backgroundImage = "url("+urls[0]+")";
+					}
 				}
 			}
-		}
+		});
 	}
 	</script>
 	</body>

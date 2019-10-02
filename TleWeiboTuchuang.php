@@ -3,13 +3,13 @@
 Plugin Name: TleWeiboTuchuang
 Plugin URI: https://github.com/muzishanshi/TleWeiboTuchuang
 Description:  TleWeiboTuchuang（TleImgPool图池）插件源于新浪图床(已使用微博官方api实现)，而后扩展了阿里图床等功能，因技术有限，若存在bug欢迎邮件反馈，方能逐步升级。
-Version: 1.0.10
+Version: 1.0.11
 Author: 二呆
 Author URI: http://www.tongleer.com
 License: 
 */
 global $wpdb;
-define("TLE_WEIBO_TUCHUANG_VERSION",10);
+define("TLE_WEIBO_TUCHUANG_VERSION",11);
 if(!class_exists('Sinaupload')){
 	require_once plugin_dir_path(__FILE__) . 'libs/Sinaupload.php';
 }
