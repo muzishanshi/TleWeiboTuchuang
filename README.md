@@ -37,6 +37,10 @@ php5.6+WordPress 5.0.2
 Github：https://github.com/muzishanshi/TleWeiboTuchuang
 
 #### 更新记录：
+2019-10-15 V1.0.12
+
+	新增360图床、京东图床
+
 2019-10-02 V1.0.11
 
 	修复因加载cloudflare的layer.js失效导致的bug。

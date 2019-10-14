@@ -44,15 +44,17 @@ $ali_configs = get_settings('tle_weibo_tuchuang');
 			alert('不选择图片上传了吗……');
 			return;
 		}
-		upLoadFlag = false;
-		document.getElementById("tle_imgpool_ali_post").innerHTML="正在上传中……请稍后……";
 		for(var i = 0; i < file.length; i++){
 			var imageData = new FormData();
 			imageData.append("file", file[i]);
 			tleImgpoolAliXmlHttp=new XMLHttpRequest();
-			tleImgpoolAliXmlHttp.open("POST","https://www.tongleer.com/api/web/?action=weiboimg",true);
+			tleImgpoolAliXmlHttp.open("POST","https://www.tongleer.com/api/web/?action=weiboimg&type=ali",true);
 			tleImgpoolAliXmlHttp.send(imageData);
+			upLoadFlag = false;
+			document.getElementById("tle_imgpool_ali_post").innerHTML="正在上传中"+file[i].name;
 			tleImgpoolAliXmlHttp.onreadystatechange=function () {
+				upLoadFlag = true;
+				document.getElementById("tle_imgpool_ali_post").innerHTML="点击此区域上传图片";
 				if (tleImgpoolAliXmlHttp.readyState ==4 && tleImgpoolAliXmlHttp.status ==200){
 					var data=JSON.parse(tleImgpoolAliXmlHttp.responseText);
 					var url=tle_aliprefix+data.data.src.substring(data.data.src.lastIndexOf("/")+1);
@@ -80,8 +82,6 @@ $ali_configs = get_settings('tle_weibo_tuchuang');
 			});
 			*/
 		}
-		upLoadFlag = true;
-		document.getElementById("tle_imgpool_ali_post").innerHTML="点击此区域上传图片";
 	}
 	
 	var inputFileHandlerAli = function(){

@@ -52,14 +52,13 @@ try{
 				layer.msg('不要上传图片了吗……');
 				return;
 			}
-			
-			upLoadFlag = false;
-			alifile_webimgdiv.innerHTML = '上传中……';
 			var j=0;for(var i = 0; i < file.length; i++){
 				var imageData = new FormData();
 				imageData.append("file", file[i]);
+				upLoadFlag = false;
+				alifile_webimgdiv.innerHTML = '上传中'+file[i].name;
 				$.ajax({
-					url: "https://www.tongleer.com/api/web/?action=weiboimg",
+					url: "https://www.tongleer.com/api/web/?action=weiboimg&type=ali",
 					type: 'POST',
 					data: imageData,
 					cache: false,
@@ -67,6 +66,8 @@ try{
 					processData: false,
 					dataType: 'json',
 					success: function (data) {
+						upLoadFlag = true;
+						alifile_webimgdiv.innerHTML = '阿里图床';
 						var url=tle_aliprefix+data.data.src.substring(data.data.src.lastIndexOf("/")+1);
 						if(j==0){
 							j++;
@@ -82,6 +83,8 @@ try{
 						}
 					},
 					error: function (data) {
+						upLoadFlag = true;
+						alifile_webimgdiv.innerHTML = '阿里图床';
 						if(j==0){
 							j++;
 							layer.confirm('<font color="green"><small>上传结果</small><br /><small id="aliimgurl">上传失败<br /></small></font><textarea id="aliimgcode" style="width:100%;margin: 0 auto;" rows="2" onfocus="this.select();">上传失败\r\n</textarea>', {
@@ -96,8 +99,6 @@ try{
 					}
 				});
 			}
-			upLoadFlag = true;
-			alifile_webimgdiv.innerHTML = '阿里图床';
 		});
 	}
 	</script>

@@ -2,14 +2,14 @@
 /* 
 Plugin Name: TleWeiboTuchuang
 Plugin URI: https://github.com/muzishanshi/TleWeiboTuchuang
-Description:  TleWeiboTuchuang（TleImgPool图池）插件源于新浪图床(已使用微博官方api实现)，而后扩展了阿里图床等功能，因技术有限，若存在bug欢迎邮件反馈，方能逐步升级。
-Version: 1.0.11
+Description:  TleWeiboTuchuang插件源于新浪图床(已使用微博官方api实现)，而后扩展了阿里图床、奇虎360图床、京东图床等功能，因技术有限，若存在bug欢迎邮件反馈，方能逐步升级。
+Version: 1.0.12
 Author: 二呆
 Author URI: http://www.tongleer.com
 License: 
 */
 global $wpdb;
-define("TLE_WEIBO_TUCHUANG_VERSION",11);
+define("TLE_WEIBO_TUCHUANG_VERSION",12);
 if(!class_exists('Sinaupload')){
 	require_once plugin_dir_path(__FILE__) . 'libs/Sinaupload.php';
 }
@@ -17,12 +17,20 @@ if(!class_exists('Sinaupload')){
 if(isset($_GET['t'])){
 	/*设置参数*/
     if($_GET['t'] == 'updateWBTCConfig'){
-		$ali_configs = get_settings('tle_weibo_tuchuang');
-        update_option('tle_weibo_tuchuang', array('tle_weibouser' => $_REQUEST['tle_weibouser'], 'tle_weibopwd' => $_REQUEST['tle_weibopwd'], 'tle_weibo_issave' => $_REQUEST['tle_weibo_issave'],'tle_weiboprefix'=>$_REQUEST['tle_weiboprefix'],'tle_aliprefix'=>$ali_configs["tle_aliprefix"],'tle_weibo_https'=>$_REQUEST['tle_weibo_https']));
+		$old_configs = get_settings('tle_weibo_tuchuang');
+        update_option('tle_weibo_tuchuang', array('tle_weibouser' => $_REQUEST['tle_weibouser'], 'tle_weibopwd' => $_REQUEST['tle_weibopwd'], 'tle_weibo_issave' => $_REQUEST['tle_weibo_issave'],'tle_weiboprefix'=>$_REQUEST['tle_weiboprefix'],'tle_weibo_https'=>$_REQUEST['tle_weibo_https'],'tle_aliprefix'=>$old_configs["tle_aliprefix"],'tle_qihuprefix'=>$old_configs["tle_qihuprefix"],'tle_jdprefix'=>$old_configs["tle_jdprefix"]));
     }
 	if($_GET['t'] == 'updateALTCConfig'){
-		$weibo_configs = get_settings('tle_weibo_tuchuang');
-        update_option('tle_weibo_tuchuang', array('tle_aliprefix' => $_REQUEST['tle_aliprefix'],'tle_weibouser' => $weibo_configs['tle_weibouser'],'tle_weibopwd' => $weibo_configs['tle_weibopwd'],'tle_weibo_issave' => $weibo_configs['tle_weibo_issave'],'tle_weiboprefix'=>$weibo_configs['tle_weiboprefix'],'tle_weibo_https'=>$weibo_configs['tle_weibo_https']));
+		$old_configs = get_settings('tle_weibo_tuchuang');
+        update_option('tle_weibo_tuchuang', array('tle_aliprefix' => $_REQUEST['tle_aliprefix'],'tle_weibouser' => $old_configs['tle_weibouser'],'tle_weibopwd' => $old_configs['tle_weibopwd'],'tle_weibo_issave' => $old_configs['tle_weibo_issave'],'tle_weiboprefix'=>$old_configs['tle_weiboprefix'],'tle_weibo_https'=>$old_configs['tle_weibo_https'],'tle_qihuprefix'=>$old_configs['tle_qihuprefix'],'tle_jdprefix'=>$old_configs['tle_jdprefix']));
+    }
+	if($_GET['t'] == 'updateQHTCConfig'){
+		$old_configs = get_settings('tle_weibo_tuchuang');
+        update_option('tle_weibo_tuchuang', array('tle_aliprefix' => $old_configs['tle_aliprefix'],'tle_weibouser' => $old_configs['tle_weibouser'],'tle_weibopwd' => $old_configs['tle_weibopwd'],'tle_weibo_issave' => $old_configs['tle_weibo_issave'],'tle_weiboprefix'=>$old_configs['tle_weiboprefix'],'tle_weibo_https'=>$old_configs['tle_weibo_https'],'tle_qihuprefix'=>$_REQUEST['tle_qihuprefix'],'tle_jdprefix'=>$old_configs['tle_jdprefix']));
+    }
+	if($_GET['t'] == 'updateJDTCConfig'){
+		$old_configs = get_settings('tle_weibo_tuchuang');
+        update_option('tle_weibo_tuchuang', array('tle_jdprefix' => $_REQUEST['tle_jdprefix'],'tle_weibouser' => $old_configs['tle_weibouser'],'tle_weibopwd' => $old_configs['tle_weibopwd'],'tle_weibo_issave' => $old_configs['tle_weibo_issave'],'tle_weiboprefix'=>$old_configs['tle_weiboprefix'],'tle_weibo_https'=>$old_configs['tle_weibo_https'],'tle_qihuprefix'=>$old_configs['tle_qihuprefix'],'tle_aliprefix'=>$old_configs['tle_aliprefix']));
     }
     /*编辑文章中上传*/
     if($_GET['t'] == 'uploadWBTC'){
@@ -137,10 +145,80 @@ if(isset($_GET['t'])){
 					$tle_aliprefix=str_replace(".","\.",$tle_aliprefix);
 					preg_match_all( "/<(img|IMG).*?src=[\'|\"](?!".$tle_aliprefix.")(.*?)[\'|\"].*?[\/]?>/", $post_content, $submatches );
 					foreach($submatches[2] as $url){
-						$result = $request->request('https://www.tongleer.com/api/web/?action=weiboimg&imgurl='.$url);
+						$result = $request->request('https://www.tongleer.com/api/web/?action=weiboimgtype=ali&imgurl='.$url);
 						$arr=json_decode($result["body"],true);
 						if(isset($arr['data']["src"])){
 							$imgurl=$ali_configs['tle_aliprefix'].basename($arr['data']["src"]);
+							$post_content=str_replace($url,$imgurl,$post_content);
+							
+							if(strpos($url,get_bloginfo("url"))!== false){
+								$path=str_replace(get_bloginfo("url"),"",$url);
+								$oldpath=plugin_dir_path(__FILE__)."../../..".$path;
+								@unlink($oldpath);
+							}
+						}
+					}
+					$wpdb->update($wpdb->prefix."posts",array('post_content'=>$post_content),array("ID"=>$postid));
+					$json=json_encode(array("status"=>"ok","msg"=>"转换成功"));
+					echo $json;
+					break;
+			}
+			exit;
+		}
+	}
+	/*转换360图床链接*/
+	if($_GET['t']=='updateQHTCLinks'){
+		$action = isset($_POST['action']) ? addslashes($_POST['action']) : '';
+		if(!empty($action)){
+			switch ($action) {
+				case 'updateQHTCLinks':
+					$request = new WP_Http;
+					$qihu_configs = get_settings('tle_weibo_tuchuang');
+					$postid = isset($_POST['postid']) ? addslashes($_POST['postid']) : '';
+					$post_content = get_post($postid)->post_content;
+					$tle_qihuprefix=str_replace("/","\/",$qihu_configs['tle_qihuprefix']);
+					$tle_qihuprefix=str_replace(".","\.",$tle_qihuprefix);
+					preg_match_all( "/<(img|IMG).*?src=[\'|\"](?!".$tle_qihuprefix.")(.*?)[\'|\"].*?[\/]?>/", $post_content, $submatches );
+					foreach($submatches[2] as $url){
+						$result = $request->request('https://www.tongleer.com/api/web/?action=weiboimg&type=qihu&imgurl='.$url);
+						$arr=json_decode($result["body"],true);
+						if(isset($arr['data']["src"])){
+							$imgurl=$qihu_configs['tle_qihuprefix'].basename($arr['data']["src"]);
+							$post_content=str_replace($url,$imgurl,$post_content);
+							
+							if(strpos($url,get_bloginfo("url"))!== false){
+								$path=str_replace(get_bloginfo("url"),"",$url);
+								$oldpath=plugin_dir_path(__FILE__)."../../..".$path;
+								@unlink($oldpath);
+							}
+						}
+					}
+					$wpdb->update($wpdb->prefix."posts",array('post_content'=>$post_content),array("ID"=>$postid));
+					$json=json_encode(array("status"=>"ok","msg"=>"转换成功"));
+					echo $json;
+					break;
+			}
+			exit;
+		}
+	}
+	/*转换京东图床链接*/
+	if($_GET['t']=='updateJDTCLinks'){
+		$action = isset($_POST['action']) ? addslashes($_POST['action']) : '';
+		if(!empty($action)){
+			switch ($action) {
+				case 'updateJDTCLinks':
+					$request = new WP_Http;
+					$jd_configs = get_settings('tle_weibo_tuchuang');
+					$postid = isset($_POST['postid']) ? addslashes($_POST['postid']) : '';
+					$post_content = get_post($postid)->post_content;
+					$tle_jdprefix=str_replace("/","\/",$jd_configs['tle_jdprefix']);
+					$tle_jdprefix=str_replace(".","\.",$tle_jdprefix);
+					preg_match_all( "/<(img|IMG).*?src=[\'|\"](?!".$tle_jdprefix.")(.*?)[\'|\"].*?[\/]?>/", $post_content, $submatches );
+					foreach($submatches[2] as $url){
+						$result = $request->request('https://www.tongleer.com/api/web/?action=weiboimg&type=jd&imgurl='.$url);
+						$arr=json_decode($result["body"],true);
+						if(isset($arr['data']["title"])){
+							$imgurl=$jd_configs['tle_jdprefix'].$arr['data']["title"];
 							$post_content=str_replace($url,$imgurl,$post_content);
 							
 							if(strpos($url,get_bloginfo("url"))!== false){
@@ -431,6 +509,30 @@ function tle_weibo_tuchuang_render_post_columns($column_name, $id) {
 			}else{
 				echo '无需转换阿里';
 			}
+			//转换360图床链接
+			$qihu_configs = get_settings('tle_weibo_tuchuang');
+			$tle_qihuprefix=str_replace("/","\/",$qihu_configs['tle_qihuprefix']);
+			$tle_qihuprefix=str_replace(".","\.",$tle_qihuprefix);
+			preg_match_all( "/<(img|IMG).*?src=[\'|\"](?!".$tle_qihuprefix.")(.*?)[\'|\"].*?[\/]?>/", $post_content, $submatches );
+			if(count($submatches[2])>0){
+				echo '
+					<a href="javascript:;" class="tle_imgpool_qihu_convert_id" id="tle_imgpool_qihu_convert_id'.$id.'" data-id="'.$id.'">转换360</a>
+				';
+			}else{
+				echo '无需转换360';
+			}
+			//转换京东图床链接
+			$jd_configs = get_settings('tle_weibo_tuchuang');
+			$tle_jdprefix=str_replace("/","\/",$jd_configs['tle_jdprefix']);
+			$tle_jdprefix=str_replace(".","\.",$tle_jdprefix);
+			preg_match_all( "/<(img|IMG).*?src=[\'|\"](?!".$tle_jdprefix.")(.*?)[\'|\"].*?[\/]?>/", $post_content, $submatches );
+			if(count($submatches[2])>0){
+				echo '
+					<a href="javascript:;" class="tle_imgpool_jd_convert_id" id="tle_imgpool_jd_convert_id'.$id.'" data-id="'.$id.'">转换京东</a>
+				';
+			}else{
+				echo '无需转换京东';
+			}
 			//图片本地化
 			$blogurl=str_replace("/","\/",get_bloginfo("url"));
 			$blogurl=str_replace(".","\.",$blogurl);
@@ -477,6 +579,30 @@ function tle_weibo_tuchuang_scripts(){
 			var id=$(this).attr("id");
 			$("#"+id).click( function () {
 				$.post("admin.php?page=tle-weibo-tuchuang&t=updateALTCLinks",{action:"updateALTCLinks",postid:$(this).attr("data-id")},function(data){
+					var data=JSON.parse(data);
+					if(data.status=="noneconfig"){
+						alert(data.msg);
+					}
+					window.location.reload();
+				});
+			});
+		});
+		$(".tle_imgpool_qihu_convert_id").each(function(){
+			var id=$(this).attr("id");
+			$("#"+id).click( function () {
+				$.post("admin.php?page=tle-weibo-tuchuang&t=updateQHTCLinks",{action:"updateQHTCLinks",postid:$(this).attr("data-id")},function(data){
+					var data=JSON.parse(data);
+					if(data.status=="noneconfig"){
+						alert(data.msg);
+					}
+					window.location.reload();
+				});
+			});
+		});
+		$(".tle_imgpool_jd_convert_id").each(function(){
+			var id=$(this).attr("id");
+			$("#"+id).click( function () {
+				$.post("admin.php?page=tle-weibo-tuchuang&t=updateJDTCLinks",{action:"updateJDTCLinks",postid:$(this).attr("data-id")},function(data){
 					var data=JSON.parse(data);
 					if(data.status=="noneconfig"){
 						alert(data.msg);
@@ -555,6 +681,8 @@ function add_my_media_button() {
 		</style>
 		<a href="javascript:;" class="weibo-upload"><input type="file" id="inputWeiboFile" '.$isMultiple.' />微博图床</a>
 		<a href="javascript:;" class="weibo-upload"><input type="file" id="inputAliFile" multiple />阿里图床</a>
+		<a href="javascript:;" class="weibo-upload"><input type="file" id="inputQihuFile" multiple />奇虎360图床</a>
+		<a href="javascript:;" class="weibo-upload"><input type="file" id="inputJdFile" multiple />京东图床</a>
 		<script>
 		var aliInputBtn = document.getElementById("inputAliFile");
 		var inputFileHandler3 = function(){
@@ -572,13 +700,38 @@ function add_my_media_button() {
 		input2.addEventListener("change", function() {
 			inputFileHandler2();
 		}, false);
+		
+		var qihuInputBtn = document.getElementById("inputQihuFile");
+		var inputFileHandlerQihu2 = function(){
+			var qihufile = qihuInputBtn.files;
+			upLoadQihu(qihufile);
+		}
+		qihuInputBtn.addEventListener("change", function() {
+			inputFileHandlerQihu2();
+		}, false);
+		var inputJd = document.getElementById("inputJdFile");
+		var inputFileHandlerJd2 = function(){
+			var file2 = inputJd.files;
+			upLoadJd(file2);
+		}
+		inputJd.addEventListener("change", function() {
+			inputFileHandlerJd2();
+		}, false);
 		</script>
 	';
 }
 add_action('add_meta_boxes', 'tle_imgpool_post_box');
 function tle_imgpool_post_box(){
+	add_meta_box('tle_imgpool_jd_div', __('京东图床'), 'tle_imgpool_jd_post_html', 'post', 'side');
+	add_meta_box('tle_imgpool_qihu_div', __('奇虎360图床'), 'tle_imgpool_qihu_post_html', 'post', 'side');
 	add_meta_box('tle_imgpool_ali_div', __('阿里图床'), 'tle_imgpool_ali_post_html', 'post', 'side');
     add_meta_box('tle_imgpool_weibo_div', __('微博图床'), 'tle_imgpool_weibo_post_html', 'post', 'side');
+}
+function tle_imgpool_jd_post_html(){
+	include "TleWeiboTuchuang_jdhtml.php";
+}
+function tle_imgpool_qihu_post_html(){
+	include "TleWeiboTuchuang_qihuhtml.php";
 }
 function tle_imgpool_ali_post_html(){
 	include "TleWeiboTuchuang_alihtml.php";
@@ -649,6 +802,66 @@ class tle_imgpool_ali_foreground extends WP_Widget {
 			<label>
 				高度：
 				<input style="width:100%;" id="<?php echo $this->get_field_id('tle_webimgaliheight'); ?>" name="<?php echo $this->get_field_name('tle_webimgaliheight'); ?>" type="text" value="<?php echo $instance['tle_webimgaliheight']; ?>" />
+			</label>
+		</p>
+		<?php
+	}
+}
+/*前台奇虎360图床小工具*/
+add_action( 'widgets_init', 'tle_imgpool_qihu_foreground' );
+function tle_imgpool_qihu_foreground() {
+	register_widget( 'tle_imgpool_qihu_foreground' );
+}
+class tle_imgpool_qihu_foreground extends WP_Widget {
+	function tle_imgpool_qihu_foreground() {
+		$widget_ops = array( 'classname' => 'tle_imgpool_qihu_foreground', 'description' => '显示前台阿里图床' );
+		$this->WP_Widget( 'tle_imgpool_qihu_foreground', '奇虎360图床', $widget_ops, $control_ops );
+	}
+	function widget( $args, $instance ) {
+		include "page/page_qihu_tuchuang.php";
+	}
+	function form($instance) {
+		?>
+		<p>
+			<label>
+				背景：
+				<input style="width:100%;" id="<?php echo $this->get_field_id('tle_webqihuimgbg'); ?>" name="<?php echo $this->get_field_name('tle_webqihuimgbg'); ?>" type="text" value="<?php echo $instance['tle_webqihuimgbg']; ?>" />
+			</label>
+		</p>
+		<p>
+			<label>
+				高度：
+				<input style="width:100%;" id="<?php echo $this->get_field_id('tle_webqihuimgheight'); ?>" name="<?php echo $this->get_field_name('tle_webqihuimgheight'); ?>" type="text" value="<?php echo $instance['tle_webqihuimgheight']; ?>" />
+			</label>
+		</p>
+		<?php
+	}
+}
+/*前台阿里图床小工具*/
+add_action( 'widgets_init', 'tle_imgpool_jd_foreground' );
+function tle_imgpool_jd_foreground() {
+	register_widget( 'tle_imgpool_jd_foreground' );
+}
+class tle_imgpool_jd_foreground extends WP_Widget {
+	function tle_imgpool_jd_foreground() {
+		$widget_ops = array( 'classname' => 'tle_imgpool_jd_foreground', 'description' => '显示前台阿里图床' );
+		$this->WP_Widget( 'tle_imgpool_jd_foreground', '京东图床', $widget_ops, $control_ops );
+	}
+	function widget( $args, $instance ) {
+		include "page/page_jd_tuchuang.php";
+	}
+	function form($instance) {
+		?>
+		<p>
+			<label>
+				背景：
+				<input style="width:100%;" id="<?php echo $this->get_field_id('tle_webjdimgbg'); ?>" name="<?php echo $this->get_field_name('tle_webjdimgbg'); ?>" type="text" value="<?php echo $instance['tle_webjdimgbg']; ?>" />
+			</label>
+		</p>
+		<p>
+			<label>
+				高度：
+				<input style="width:100%;" id="<?php echo $this->get_field_id('tle_webjdimgheight'); ?>" name="<?php echo $this->get_field_name('tle_webjdimgheight'); ?>" type="text" value="<?php echo $instance['tle_webjdimgheight']; ?>" />
 			</label>
 		</p>
 		<?php

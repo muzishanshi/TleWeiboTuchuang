@@ -1,11 +1,13 @@
 <div class="wrap">
 	<h2 class="nav-tab-wrapper" style="border-bottom: 1px solid #ccc;">
-	  <a class="nav-tab" href="javascript:;" id="tab-title-setting">微博图床设置</a>
-	  <a class="nav-tab" href="javascript:;" id="tab-title-log">阿里图床设置</a>
+	  <a class="nav-tab" href="javascript:;" id="tab-title-weibo">微博图床设置</a>
+	  <a class="nav-tab" href="javascript:;" id="tab-title-ali">阿里图床设置</a>
+	  <a class="nav-tab" href="javascript:;" id="tab-title-qihu">奇虎360图床设置</a>
+	  <a class="nav-tab" href="javascript:;" id="tab-title-jd">京东图床设置</a>
 	  <a class="nav-tab" href="javascript:;" id="tab-title-convert" style="display: none;">图床转换</a>
-	  <a class="nav-tab" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=diamond0422@qq.com" target="_blank"  id="tab-title-about"><font color="red">Bug反馈</font></a>
+	  <a class="nav-tab" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=diamond0422@qq.com" target="_blank"  id="tab-title-about"><font color="red">反馈</font></a>
 	</h2>
-	<div id="tab-setting" class="div-tab hidden" style="display: none;" >
+	<div id="tab-weibo" class="div-tab hidden" style="display: none;" >
 		<h3>微博图床设置</h3>
 		<small><font color="red">因微博官方限制，故微博图床只能开启<a href="https://github.com/muzishanshi/TleWeiboSyncV2" target="_blank">微博同步插件</a>后配合使用。</font></small>
 		<form method="get" action="">
@@ -15,7 +17,7 @@
 				<!--
 				<input type="radio" name="tle_weibo_issave" value="n" <?=isset($weibo_configs['tle_weibo_issave'])?($weibo_configs['tle_weibo_issave']=="n"?"checked":""):"checked";?> />否
 				-->
-				<input type="radio" name="tle_weibo_issave" value="y" <?=isset($weibo_configs['tle_weibo_issave'])?($weibo_configs['tle_weibo_issave']=="y"?"checked":""):"";?> />是
+				<input type="radio" name="tle_weibo_issave" value="y" checked />是
 			</p>
 			<p>
 				是否启用https链接：
@@ -38,16 +40,18 @@
 			</p>
 			<p>
 				特别注意：<br />
-				1、在微博同步插件中，微博开放平台的安全域名要与网站域名一致；<br />
-				2、保存到微博相册时，如果频繁会禁用当前微博的接口，所以每次只能上传一张图片；<br />
+				1、<font color='green'>在微博同步插件中，微博开放平台的安全域名要与网站域名一致；</font><br />
+				2、<font color='#000'>保存到微博相册时，如果频繁会禁用当前微博的接口，所以每次只能上传一张图片；</font><br />
 				3、<font color='blue'>若选择启用https链接，则会受微博防盗链影响，须要在网站的head标签中加入&lt;meta name='referrer' content='same-origin'>代码才能显示。</font><br />
+				4、<font color="red">授权的微博账号需要绑定手机。</font><br />
+				5、<font color='#004477'>由于代码水平不高，如果发现安全点不动的情况，则可能是JQuery冲突，需要把其他插件加载JQuery的语句删除，或者把本插件TleWeiboTuchuang.php的561行加载jquery的语句删除，前台图床同理，加载jquery的语句在插件目录page中每个文件的head标签内。</font><br />
 				<font color="#eee">
-				4、不保存到微博相册时，设置微博小号后可多尝试多上传几次，上传成功尽量不要将此微博小号登录微博系的网站、软件，可以登录，但不确定会不会上传失败，上传失败了再重新上传2次同样可以正常上传，如果小号等级过低，可尝试微博大号，微博账号不能有手机、二维码验证权限，插件可正常使用，无需担心。
+				6、不保存到微博相册时，设置微博小号后可多尝试多上传几次，上传成功尽量不要将此微博小号登录微博系的网站、软件，可以登录，但不确定会不会上传失败，上传失败了再重新上传2次同样可以正常上传，如果小号等级过低，可尝试微博大号，微博账号不能有手机、二维码验证权限，插件可正常使用，无需担心。
 				</font>
 			</p>
 		</form>
 	</div>
-	<div id="tab-log" class="div-tab hidden" style="display: none;">
+	<div id="tab-ali" class="div-tab hidden" style="display: none;">
 		<h3>阿里图床设置</h3>
 		<form method="get" action="">
 			<?php $ali_configs = get_settings('tle_weibo_tuchuang');?>
@@ -56,6 +60,34 @@
 			</p>
 			<p>
 				<input type="hidden" name="t" value="updateALTCConfig" />
+				<input type="hidden" name="page" value="tle-weibo-tuchuang" />
+				<input type="submit" value="保存" />
+			</p>
+		</form>
+	</div>
+	<div id="tab-qihu" class="div-tab hidden" style="display: none;">
+		<h3>奇虎360图床设置</h3>
+		<form method="get" action="">
+			<?php $qihu_configs = get_settings('tle_weibo_tuchuang');?>
+			<p>
+				<input type="text" name="tle_qihuprefix" placeholder="图片链接前缀" value="<?=$qihu_configs['tle_qihuprefix']?$qihu_configs['tle_qihuprefix']:"http://p0.so.qhimgs1.com/";?>" />
+			</p>
+			<p>
+				<input type="hidden" name="t" value="updateQHTCConfig" />
+				<input type="hidden" name="page" value="tle-weibo-tuchuang" />
+				<input type="submit" value="保存" />
+			</p>
+		</form>
+	</div>
+	<div id="tab-jd" class="div-tab hidden" style="display: none;">
+		<h3>京东图床设置</h3>
+		<form method="get" action="">
+			<?php $jd_configs = get_settings('tle_weibo_tuchuang');?>
+			<p>
+				<input type="text" name="tle_jdprefix" placeholder="图片链接前缀" value="<?=$jd_configs['tle_jdprefix']?$jd_configs['tle_jdprefix']:"https://img14.360buyimg.com/uba/jfs/t1/";?>" />
+			</p>
+			<p>
+				<input type="hidden" name="t" value="updateJDTCConfig" />
 				<input type="hidden" name="page" value="tle-weibo-tuchuang" />
 				<input type="submit" value="保存" />
 			</p>
