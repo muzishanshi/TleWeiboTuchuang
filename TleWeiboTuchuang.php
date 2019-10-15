@@ -3,13 +3,13 @@
 Plugin Name: TleWeiboTuchuang
 Plugin URI: https://github.com/muzishanshi/TleWeiboTuchuang
 Description:  TleWeiboTuchuang插件源于新浪图床(已使用微博官方api实现)，而后扩展了阿里图床、奇虎360图床、京东图床等功能，因技术有限，若存在bug欢迎邮件反馈，方能逐步升级。
-Version: 1.0.12
+Version: 1.0.13
 Author: 二呆
 Author URI: http://www.tongleer.com
 License: 
 */
 global $wpdb;
-define("TLE_WEIBO_TUCHUANG_VERSION",12);
+define("TLE_WEIBO_TUCHUANG_VERSION",13);
 if(!class_exists('Sinaupload')){
 	require_once plugin_dir_path(__FILE__) . 'libs/Sinaupload.php';
 }
@@ -147,14 +147,16 @@ if(isset($_GET['t'])){
 					foreach($submatches[2] as $url){
 						$result = $request->request('https://www.tongleer.com/api/web/?action=weiboimgtype=ali&imgurl='.$url);
 						$arr=json_decode($result["body"],true);
-						if(isset($arr['data']["src"])){
-							$imgurl=$ali_configs['tle_aliprefix'].basename($arr['data']["src"]);
-							$post_content=str_replace($url,$imgurl,$post_content);
-							
-							if(strpos($url,get_bloginfo("url"))!== false){
-								$path=str_replace(get_bloginfo("url"),"",$url);
-								$oldpath=plugin_dir_path(__FILE__)."../../..".$path;
-								@unlink($oldpath);
+						if($arr['code']==0){
+							if(isset($arr['data']["src"])){
+								$imgurl=$ali_configs['tle_aliprefix'].basename($arr['data']["src"]);
+								$post_content=str_replace($url,$imgurl,$post_content);
+								
+								if(strpos($url,get_bloginfo("url"))!== false){
+									$path=str_replace(get_bloginfo("url"),"",$url);
+									$oldpath=plugin_dir_path(__FILE__)."../../..".$path;
+									@unlink($oldpath);
+								}
 							}
 						}
 					}
@@ -182,14 +184,16 @@ if(isset($_GET['t'])){
 					foreach($submatches[2] as $url){
 						$result = $request->request('https://www.tongleer.com/api/web/?action=weiboimg&type=qihu&imgurl='.$url);
 						$arr=json_decode($result["body"],true);
-						if(isset($arr['data']["src"])){
-							$imgurl=$qihu_configs['tle_qihuprefix'].basename($arr['data']["src"]);
-							$post_content=str_replace($url,$imgurl,$post_content);
-							
-							if(strpos($url,get_bloginfo("url"))!== false){
-								$path=str_replace(get_bloginfo("url"),"",$url);
-								$oldpath=plugin_dir_path(__FILE__)."../../..".$path;
-								@unlink($oldpath);
+						if($arr['code']==0){
+							if(isset($arr['data']["src"])){
+								$imgurl=$qihu_configs['tle_qihuprefix'].basename($arr['data']["src"]);
+								$post_content=str_replace($url,$imgurl,$post_content);
+								
+								if(strpos($url,get_bloginfo("url"))!== false){
+									$path=str_replace(get_bloginfo("url"),"",$url);
+									$oldpath=plugin_dir_path(__FILE__)."../../..".$path;
+									@unlink($oldpath);
+								}
 							}
 						}
 					}
@@ -217,14 +221,16 @@ if(isset($_GET['t'])){
 					foreach($submatches[2] as $url){
 						$result = $request->request('https://www.tongleer.com/api/web/?action=weiboimg&type=jd&imgurl='.$url);
 						$arr=json_decode($result["body"],true);
-						if(isset($arr['data']["title"])){
-							$imgurl=$jd_configs['tle_jdprefix'].$arr['data']["title"];
-							$post_content=str_replace($url,$imgurl,$post_content);
-							
-							if(strpos($url,get_bloginfo("url"))!== false){
-								$path=str_replace(get_bloginfo("url"),"",$url);
-								$oldpath=plugin_dir_path(__FILE__)."../../..".$path;
-								@unlink($oldpath);
+						if($arr['code']==0){
+							if(isset($arr['data']["title"])){
+								$imgurl=$jd_configs['tle_jdprefix'].$arr['data']["title"];
+								$post_content=str_replace($url,$imgurl,$post_content);
+								
+								if(strpos($url,get_bloginfo("url"))!== false){
+									$path=str_replace(get_bloginfo("url"),"",$url);
+									$oldpath=plugin_dir_path(__FILE__)."../../..".$path;
+									@unlink($oldpath);
+								}
 							}
 						}
 					}
@@ -722,10 +728,12 @@ function add_my_media_button() {
 }
 add_action('add_meta_boxes', 'tle_imgpool_post_box');
 function tle_imgpool_post_box(){
-	add_meta_box('tle_imgpool_jd_div', __('京东图床'), 'tle_imgpool_jd_post_html', 'post', 'side');
-	add_meta_box('tle_imgpool_qihu_div', __('奇虎360图床'), 'tle_imgpool_qihu_post_html', 'post', 'side');
-	add_meta_box('tle_imgpool_ali_div', __('阿里图床'), 'tle_imgpool_ali_post_html', 'post', 'side');
-    add_meta_box('tle_imgpool_weibo_div', __('微博图床'), 'tle_imgpool_weibo_post_html', 'post', 'side');
+	if( current_user_can( 'manage_options' ) ) {
+		add_meta_box('tle_imgpool_jd_div', __('京东图床'), 'tle_imgpool_jd_post_html', 'post', 'side');
+		add_meta_box('tle_imgpool_qihu_div', __('奇虎360图床'), 'tle_imgpool_qihu_post_html', 'post', 'side');
+		add_meta_box('tle_imgpool_ali_div', __('阿里图床'), 'tle_imgpool_ali_post_html', 'post', 'side');
+		add_meta_box('tle_imgpool_weibo_div', __('微博图床'), 'tle_imgpool_weibo_post_html', 'post', 'side');
+	}
 }
 function tle_imgpool_jd_post_html(){
 	include "TleWeiboTuchuang_jdhtml.php";

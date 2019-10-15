@@ -37,7 +37,7 @@ php5.6+WordPress 5.0.2
 Github：https://github.com/muzishanshi/TleWeiboTuchuang
 
 #### 更新记录：
-2019-10-15 V1.0.12
+2019-10-15 V1.0.13
 
 	新增360图床、京东图床
 

@@ -84,7 +84,7 @@
 		<form method="get" action="">
 			<?php $jd_configs = get_settings('tle_weibo_tuchuang');?>
 			<p>
-				<input type="text" name="tle_jdprefix" placeholder="图片链接前缀" value="<?=$jd_configs['tle_jdprefix']?$jd_configs['tle_jdprefix']:"https://img14.360buyimg.com/uba/jfs/t1/";?>" />
+				<input type="text" name="tle_jdprefix" placeholder="图片链接前缀" value="<?=$jd_configs['tle_jdprefix']?$jd_configs['tle_jdprefix']:"https://img14.360buyimg.com/uba/";?>" />
 			</p>
 			<p>
 				<input type="hidden" name="t" value="updateJDTCConfig" />

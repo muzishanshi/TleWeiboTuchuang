@@ -57,8 +57,12 @@ $jd_configs = get_settings('tle_weibo_tuchuang');
 				document.getElementById("tle_imgpool_jd_post").innerHTML="点击此区域上传图片";
 				if (tleImgpoolJdXmlHttp.readyState ==4 && tleImgpoolJdXmlHttp.status ==200){
 					var data=JSON.parse(tleImgpoolJdXmlHttp.responseText);
-					var url=tle_jdprefix+data.data.title;
-					tinyMCE.activeEditor.execCommand('mceInsertContent', 0, "\n<img src='"+url+"' alt='' />\n");
+					if(data.code==0){
+						var url=tle_jdprefix+data.data.title;
+						tinyMCE.activeEditor.execCommand('mceInsertContent', 0, "\n<img src='"+url+"' alt='' />\n");
+					}else{
+						alert(data.msg);
+					}
 				}else{
 					tinyMCE.activeEditor.execCommand('mceInsertContent', 0, "\n此图片上传失败：'"+data.code+"'\n");
 				}

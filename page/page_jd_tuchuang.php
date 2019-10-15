@@ -69,6 +69,9 @@ try{
 						upLoadFlag = true;
 						jdfile_webimgdiv.innerHTML = '京东图床';
 						var url=tle_jdprefix+data.data.title;
+						if(data.code!=0){
+							url=data.msg;
+						}
 						if(j==0){
 							j++;
 							layer.confirm('<font color="green"><small>上传结果</small><br /><small id="jdimgurl"><a href="'+url+'" target="_blank">'+url+'<br /></a></small></font><textarea id="jdimgcode" style="width:100%;margin: 0 auto;" rows="2" onfocus="this.select();"><img src="'+url+'" alt="'+data.data.title+'" /></textarea>', {
