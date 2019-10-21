@@ -18,11 +18,11 @@ if(isset($_GET['t'])){
 	/*设置参数*/
     if($_GET['t'] == 'updateWBTCConfig'){
 		$old_configs = get_settings('tle_weibo_tuchuang');
-        update_option('tle_weibo_tuchuang', array('tle_weibouser' => $_REQUEST['tle_weibouser'], 'tle_weibopwd' => $_REQUEST['tle_weibopwd'], 'tle_weibo_issave' => $_REQUEST['tle_weibo_issave'],'tle_weiboprefix'=>$_REQUEST['tle_weiboprefix'],'tle_weibo_https'=>$_REQUEST['tle_weibo_https'],'tle_aliprefix'=>$old_configs["tle_aliprefix"],'tle_qihuprefix'=>$old_configs["tle_qihuprefix"],'tle_jdprefix'=>$old_configs["tle_jdprefix"]));
+        update_option('tle_weibo_tuchuang', array('isEnableJQuery' => $_REQUEST['isEnableJQuery'], 'tle_weibouser' => $_REQUEST['tle_weibouser'], 'tle_weibopwd' => $_REQUEST['tle_weibopwd'], 'tle_weibo_issave' => $_REQUEST['tle_weibo_issave'],'tle_weiboprefix'=>$_REQUEST['tle_weiboprefix'],'tle_weibo_https'=>$_REQUEST['tle_weibo_https'],'tle_aliprefix'=>$old_configs["tle_aliprefix"],'tle_qihuprefix'=>$old_configs["tle_qihuprefix"],'tle_jdprefix'=>$old_configs["tle_jdprefix"]));
     }
 	if($_GET['t'] == 'updateALTCConfig'){
 		$old_configs = get_settings('tle_weibo_tuchuang');
-        update_option('tle_weibo_tuchuang', array('tle_aliprefix' => $_REQUEST['tle_aliprefix'],'tle_weibouser' => $old_configs['tle_weibouser'],'tle_weibopwd' => $old_configs['tle_weibopwd'],'tle_weibo_issave' => $old_configs['tle_weibo_issave'],'tle_weiboprefix'=>$old_configs['tle_weiboprefix'],'tle_weibo_https'=>$old_configs['tle_weibo_https'],'tle_qihuprefix'=>$old_configs['tle_qihuprefix'],'tle_jdprefix'=>$old_configs['tle_jdprefix']));
+        update_option('tle_weibo_tuchuang', array('tle_aliprefix' => $_REQUEST['tle_aliprefix'],'tle_weibouser' => $old_configs['tle_weibouser'],'tle_weibopwd' => $old_configs['tle_weibopwd'],'tle_weibo_issave' => $old_configs['tle_weibo_issave'],'tle_weiboprefix'=>$old_configs['tle_weiboprefix'],'tle_weibo_https'=>$old_configs['tle_weibo_https'],'tle_qihuprefix'=>$old_configs['tle_qihuprefix'],'tle_jdprefix'=>$old_configs['tle_jdprefix'],'isEnableJQuery'=>$old_configs['isEnableJQuery']));
     }
 	if($_GET['t'] == 'updateQHTCConfig'){
 		$old_configs = get_settings('tle_weibo_tuchuang');

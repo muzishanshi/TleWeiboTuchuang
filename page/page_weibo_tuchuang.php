@@ -26,7 +26,15 @@ try{
 		<meta name="author" content="同乐儿">
 		<meta name="referrer" content="never" />
 		<link rel="alternate icon" href="<?=$weibo_configs['tle_weiboprefix'];?>ecabade5ly1fxpiemcap1j200s00s744.jpg" type="image/png" />
-		<script src="https://apps.bdimg.com/libs/jquery/1.7.1/jquery.min.js"></script>
+		<?php
+		if(function_exists("is_single")){
+			if(@$weibo_configs['isEnableJQuery']=="y"){
+				echo '<script src="https://apps.bdimg.com/libs/jquery/1.7.1/jquery.min.js"></script>';
+			}
+		}else{
+			echo '<script src="https://apps.bdimg.com/libs/jquery/1.7.1/jquery.min.js"></script>';
+		}
+		?>
 		<script src="https://www.tongleer.com/api/web/include/layui/layui.js"></script>
 	</head>
 	<body>

@@ -6,6 +6,7 @@ define('PATH', dirname(dirname(__FILE__)).'/');
 require_once(PATH . '../../../wp-blog-header.php');  
 ?>
 <?php
+$weibo_configs = get_settings('tle_weibo_tuchuang');
 $jd_configs = get_settings('tle_weibo_tuchuang');
 try{
 	?>
@@ -21,7 +22,15 @@ try{
 		<meta name="author" content="同乐儿">
 		<meta name="referrer" content="never" />
 		<link rel="alternate icon" href="<?=$jd_configs['tle_jdprefix'];?>HTB1RdVVVbvpK1RjSZFq763XUVXae.png" type="image/png" />
-		<script src="https://apps.bdimg.com/libs/jquery/1.7.1/jquery.min.js"></script>
+		<?php
+		if(function_exists("is_single")){
+			if(@$weibo_configs['isEnableJQuery']=="y"){
+				echo '<script src="https://apps.bdimg.com/libs/jquery/1.7.1/jquery.min.js"></script>';
+			}
+		}else{
+			echo '<script src="https://apps.bdimg.com/libs/jquery/1.7.1/jquery.min.js"></script>';
+		}
+		?>
 		<script src="https://www.tongleer.com/api/web/include/layui/layui.js"></script>
 	</head>
 	<body>
