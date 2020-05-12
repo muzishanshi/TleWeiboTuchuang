@@ -1,6 +1,6 @@
-<img src="https://ws3.sinaimg.cn/large/ecabade5ly1fqwuz2k658j20le05nt8i" alt="TleWeiboTuchuang新浪微博图片上传插件" />
+<img src="https://ws3.sinaimg.cn/large/ecabade5ly1fqwuz2k658j20le05nt8i" alt="TleWeiboTuchuang阿里新浪360京东微博图床插件" />
 
-### TleWeiboTuchuang（TleImgPool图池）阿里新浪微博图床插件
+### TleWeiboTuchuang阿里新浪360京东微博图床插件
 ---
 
 新版介绍：
@@ -32,11 +32,13 @@ php5.6+WordPress 5.0.2
 
 网站：http://www.tongleer.com/
 
-1元入群：http://joke.tongleer.com/327.html
-
 Github：https://github.com/muzishanshi/TleWeiboTuchuang
 
 #### 更新记录：
+2020-05-12 V1.0.14
+
+	取消转换链接功能
+
 2019-10-15 V1.0.13
 
 	新增360图床、京东图床

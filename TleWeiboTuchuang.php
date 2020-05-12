@@ -3,13 +3,13 @@
 Plugin Name: TleWeiboTuchuang
 Plugin URI: https://github.com/muzishanshi/TleWeiboTuchuang
 Description:  TleWeiboTuchuang插件源于新浪图床(已使用微博官方api实现)，而后扩展了阿里图床、奇虎360图床、京东图床等功能，因技术有限，若存在bug欢迎邮件反馈，方能逐步升级。
-Version: 1.0.13
+Version: 1.0.14
 Author: 二呆
 Author URI: http://www.tongleer.com
 License: 
 */
 global $wpdb;
-define("TLE_WEIBO_TUCHUANG_VERSION",13);
+define("TLE_WEIBO_TUCHUANG_VERSION",14);
 if(!class_exists('Sinaupload')){
 	require_once plugin_dir_path(__FILE__) . 'libs/Sinaupload.php';
 }
@@ -503,6 +503,7 @@ function tle_weibo_tuchuang_render_post_columns($column_name, $id) {
 				echo '无需转换微博';
 			}
 			*/
+			/*
 			//转换阿里图床链接
 			$ali_configs = get_settings('tle_weibo_tuchuang');
 			$tle_aliprefix=str_replace("/","\/",$ali_configs['tle_aliprefix']);
@@ -539,6 +540,7 @@ function tle_weibo_tuchuang_render_post_columns($column_name, $id) {
 			}else{
 				echo '无需转换京东';
 			}
+			*/
 			//图片本地化
 			$blogurl=str_replace("/","\/",get_bloginfo("url"));
 			$blogurl=str_replace(".","\.",$blogurl);
