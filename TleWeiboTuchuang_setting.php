@@ -9,7 +9,11 @@
 	</h2>
 	<div id="tab-weibo" class="div-tab hidden" style="display: none;" >
 		<h3>微博图床基本设置</h3>
-		<small><font color="red">因微博官方限制，故微博图床只能开启<a href="https://github.com/muzishanshi/TleWeiboSyncV2" target="_blank">微博同步插件</a>后配合使用。</font></small>
+		<small>
+			<font color="red">因微博官方限制，故微博图床只能开启<a href="https://github.com/muzishanshi/TleWeiboSyncV2" target="_blank">微博同步插件</a>后配合使用。</font>
+			<br />
+			不过此插件只推荐配合微博同步插件使用微博图床进行上传，其他图床能用就用，不能就不用，若想用其他图床，则请前往https://image.kieng.cn/或https://pic.onji.cn/进行上传
+		</small>
 		<form method="get" action="">
 			<?php $weibo_configs = get_settings('tle_weibo_tuchuang');?>
 			<p>

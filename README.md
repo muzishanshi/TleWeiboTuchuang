@@ -1,4 +1,4 @@
-<img src="https://ws3.sinaimg.cn/large/ecabade5ly1fqwuz2k658j20le05nt8i" alt="TleWeiboTuchuang阿里新浪360京东微博图床插件" />
+<img src="https://wx3.sinaimg.cn/large/ecabade5ly1fqwuz2k658j20le05nt8i" alt="TleWeiboTuchuang阿里新浪360京东微博图床插件" />
 
 ### TleWeiboTuchuang阿里新浪360京东微博图床插件
 ---
@@ -13,7 +13,7 @@ TleWeiboTuchuang插件源于新浪图床(已使用微博官方api实现)，而�
 
 程序有可能会遇到bug不改版本号直接修改代码的时候，所以扫描以下二维码关注公众号“同乐儿”，可直接与作者二呆产生联系，不再为bug烦恼，随时随地解决问题。
 
-<img src="http://me.tongleer.com/content/uploadfile/201706/008b1497454448.png">
+<img src="https://me.tongleer.com/content/uploadfile/201706/008b1497454448.png">
 
 #### 使用方法：
 第一步：下载本插件，放在 `wp-content/plugins/` 目录中（插件文件夹名必须为TleWeiboTuchuang）；
@@ -30,7 +30,7 @@ php5.6+WordPress 5.0.2
 #### 与我联系：
 作者：二呆
 
-网站：http://www.tongleer.com/
+网站：https://www.tongleer.com/
 
 Github：https://github.com/muzishanshi/TleWeiboTuchuang
 

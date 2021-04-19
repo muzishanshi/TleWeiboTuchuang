@@ -2,7 +2,7 @@
 /* 
 Plugin Name: TleWeiboTuchuang
 Plugin URI: https://github.com/muzishanshi/TleWeiboTuchuang
-Description:  TleWeiboTuchuang插件源于新浪图床(已使用微博官方api实现)，而后扩展了阿里图床、奇虎360图床、京东图床等功能，因技术有限，若存在bug欢迎邮件反馈，方能逐步升级。
+Description:  TleWeiboTuchuang插件源于新浪图床(已使用微博官方api实现)，而后扩展了阿里图床、奇虎360图床、京东图床等功能，因技术有限，若存在bug欢迎邮件反馈，方能逐步升级，不过此插件只推荐配合微博同步插件使用微博图床进行上传，其他图床能用就用，不能就不用，若想用其他图床，则请前往https://image.kieng.cn/或https://pic.onji.cn/进行上传。
 Version: 1.0.14
 Author: 二呆
 Author URI: http://www.tongleer.com
